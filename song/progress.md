@@ -4,3 +4,4 @@
 
 # Done
 ## 8/18
+1. Created Github Repository
