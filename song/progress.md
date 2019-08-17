@@ -1,6 +1,6 @@
 # To-do list
-1. Add the KSS dataset to Google Drive.
-2. Test Google Drive mount on Google Colab.
+* Test Google Drive mount on Google Colab.
+* Prepare documents for the meeting on Monday.
 
 # References
 1. [DeepSpeech implementation](https://github.com/mozilla/DeepSpeech)
@@ -8,5 +8,7 @@
 
 # Done
 ## 8/18
-1. Created Github repository.
+1. Created this Github repository.
 2. Basic PyTorch tutorial added.
+3. Wrote sample code handling unicode Hangul Jamo. 
+4. Added the KSS dataset to Google Drive.
