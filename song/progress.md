@@ -1,6 +1,7 @@
 # To-do list
 * Test Google Drive mount on Google Colab.
 * Prepare documents for the meeting on Monday.
+* Continue reading STT papers.
 
 ---
 
