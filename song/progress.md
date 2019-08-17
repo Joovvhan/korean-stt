@@ -5,3 +5,4 @@
 # Done
 ## 8/18
 1. Created Github Repository
+2. Basic PyTorch tutorial added.
