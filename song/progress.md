@@ -18,3 +18,4 @@
 2. Basic PyTorch tutorial added.
 3. Wrote sample code handling unicode Hangul Jamo. 
 4. Added the KSS dataset to Google Drive.
+5. Basic seq2seq attention model written.
