@@ -8,6 +8,13 @@ PyTorch implementation of Korean speech-to-text.
 2. [Deep Speech: Scaling up end-to-end speech recognition](https://arxiv.org/abs/1412.5567)
 3. [Attention-Based Models for Speech Recognition](https://arxiv.org/abs/1506.07503)
 
+## Clova Recommendations
+1. [Listen, Attend and Spell](https://arxiv.org/abs/1508.01211)
+2. [Attention Is All You Need](https://arxiv.org/abs/1706.03762)
+3. [Deep Speech 2: End-to-End Speech Recognition in English and Mandarin](https://arxiv.org/abs/1512.02595)
+4. [Sequence Transduction with Recurrent Neural Networks](https://arxiv.org/abs/1211.3711)
+5. [Exploring RNN-Transducer for Chinese Speech Recognition](https://arxiv.org/abs/1811.05097)
+
 ## Videos
 1. [Speech Recognition and Deep Learning, Baidu](https://www.youtube.com/watch?v=9dXiAecyJrY&feature=youtu.be&t=13874)
 2. [PyTorch Zero to All](https://www.youtube.com/watch?v=SKq-pmkekTk)
