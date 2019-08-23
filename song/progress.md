@@ -4,7 +4,7 @@
 * Dropout
 * Batch Normalization
 * Batch Feeding, Padding, Loss Weighting
-* Badahnau Attention
+* Bahdanau Attention
 * Localized Attention
 * Test baseline System
 * Continue reading STT papers.
