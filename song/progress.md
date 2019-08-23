@@ -3,6 +3,7 @@
 * Residual GRU + Deeper RNN(Google NMT)
 * Dropout
 * Batch Normalization
+* Batch Feeding, Padding, Loss Weighting
 * Badahnau Attention
 * Localized Attention
 * Test baseline System
@@ -28,4 +29,5 @@
 
 ## 8/23
 1. Test Google Drive mount on Google Colab.
-
+2. First running example
+3. Visualization of an Attention matrix
