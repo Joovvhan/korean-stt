@@ -1,6 +1,12 @@
 # To-do list
-* Test Google Drive mount on Google Colab.
-* Prepare documents for the meeting on Monday.
+* Make code able to run on Colab and Google Drive
+* Residual GRU + Deeper RNN(Google NMT)
+* Dropout
+* Batch Normalization
+* Batch Feeding, Padding, Loss Weighting
+* Bahdanau Attention
+* Localized Attention
+* Test baseline System
 * Continue reading STT papers.
 
 ---
@@ -19,3 +25,9 @@
 3. Wrote sample code handling unicode Hangul Jamo. 
 4. Added the KSS dataset to Google Drive.
 5. Basic seq2seq attention model written.
+6. Prepare documents for the meeting on Monday.
+
+## 8/23
+1. Test Google Drive mount on Google Colab.
+2. First running example
+3. Visualization of an Attention matrix
