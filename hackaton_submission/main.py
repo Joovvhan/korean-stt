@@ -466,20 +466,22 @@ class Threading_Batched_Preloader():
         return False
 
     def get_batch(self):
+        # logger.info("Called get_batch ")
         while not (self.check_thread_flags()):
             batch = self.queue.get()
 
             if (batch != None):
+                # logger.info("Batch is Ready")
                 batched_tensor = batch[0]
                 batched_ground_truth = batch[1]
                 batched_loss_mask = batch[2]
                 ground_truth_size_list = batch[3]
+
+                return batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list
+
             else:
                 logger.info("Loader Queue is empty")
                 time.sleep(1)
-
-
-                return batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list
 
         return None
 
@@ -511,7 +513,7 @@ class Batching_Thread(threading.Thread):
                     self.queue.put(batch, True, 4)
                     success = True
                 except:
-                    logger.info("Batching Failed in Thread ID: {}".format(self.id))
+                    # logger.info("Batching Failed in Thread ID: {} Queue Size: {}".format(self.id, self.queue.qsize()))
                     time.sleep(1)
 
         self.thread_flags[self.id] = True
@@ -614,11 +616,13 @@ class Batching_Thread(threading.Thread):
 
         Sxx = np.abs(Zxx)
 
+        # logger.info('Before librosa')
+
         mel_filters = librosa.filters.mel(sr=fs, n_fft=nsc, n_mels=n_mels)
 
-        mel_specgram = np.matmul(mel_filters, Sxx)
+        # logger.info('After librosa')
 
-        # logger.info('Before log')
+        mel_specgram = np.matmul(mel_filters, Sxx)
 
         # log10(0) is minus infinite, so replace mel_specgram values smaller than 'eps' as 'eps' (1e-8)
         log_mel_specgram = 20 * np.log10(np.maximum(mel_specgram, eps))
@@ -648,7 +652,7 @@ def train(net, optimizer, ctc_loss, input_tensor, ground_truth, loss_mask, targe
 
     optimizer.zero_grad()
 
-    logger.info("Right before entering the model")
+    # logger.info("Right before entering the model")
 
     pred_tensor = net(input_tensor)
 
@@ -656,7 +660,8 @@ def train(net, optimizer, ctc_loss, input_tensor, ground_truth, loss_mask, targe
     # Shape (B, S)
     # S: Max length among true sentences
     truth = ground_truth
-    truth = truth.type(torch.cuda.LongTensor)
+    # truth = truth.type(torch.cuda.LongTensor)
+    truth = truth.type(torch.LongTensor)
 
     input_lengths = torch.full(size=(batch_size,), fill_value=pred_tensor.shape[0], dtype=torch.long)
 
@@ -686,7 +691,8 @@ def evaluate(net, ctc_loss, input_tensor, ground_truth, loss_mask, target_length
     # Shape (B, S)
     # S: Max length among true sentences
     truth = ground_truth
-    truth = truth.type(torch.cuda.LongTensor)
+    # truth = truth.type(torch.cuda.LongTensor)
+    truth = truth.type(torch.LongTensor)
 
     input_lengths = torch.full(size=(batch_size,), fill_value=pred_tensor.shape[0], dtype=torch.long)
 
@@ -898,7 +904,7 @@ def main():
 
     logger.info('Total:Train:Eval = {}:{}:{}'.format(len(wav_paths), len(wav_path_list_train), len(wav_path_list_eval)))
 
-    batch_size = 4
+    batch_size = 16
     num_thread = 2
 
     preloader_eval = Threading_Batched_Preloader(wav_path_list_eval, ground_truth_list_eval, batch_size)
@@ -921,35 +927,12 @@ def main():
 
         logger.info((datetime.now().strftime('%m-%d %H:%M:%S')))
 
-        preloader_train.initialize_batch(num_thread)
-        loss_list_train = list()
-
-        logger.info("Initialized Preloader")
-
-        # count = 0
-        while preloader_train.end_flag == False:
-            batch = preloader_train.get_batch()
-            if batch != None:
-                # logger.info("Training Batch is not None")
-                tensor_input, ground_truth, loss_mask, length_list = batch
-                pred_tensor, loss = train(net, net_optimizer, ctc_loss, tensor_input.to(device),
-                                          ground_truth.to(device), loss_mask.to(device), length_list.to(device))
-                loss_list_train.append(loss)
-                # logger.info("Loss: {}".format(loss))
-                # count += 1
-                # logger.info("Train {}/{}".format(count, np.ceil(len(wav_path_list_train)/batch_size)))
-                # logger.info("Training")
-            else:
-                logger.info("Training Batch is None")
-
-        logger.info(loss_list_train)
-        train_loss = np.mean(np.asarray(loss_list_train))
-
-        logger.info("Mean Train Loss: {}".format(train_loss))
-
         preloader_eval.initialize_batch(num_thread)
         loss_list_eval = list()
 
+        logger.info("Initialized Evaluation Preloader")
+
+        count = 0
         while preloader_eval.end_flag == False:
             batch = preloader_eval.get_batch()
             if batch != None:
@@ -961,6 +944,33 @@ def main():
         eval_loss = np.mean(np.asarray(loss_list_eval))
 
         logger.info("Mean Evaluation Loss: {}".format(eval_loss))
+
+        preloader_train.initialize_batch(num_thread)
+        loss_list_train = list()
+
+        logger.info("Initialized Training Preloader")
+
+        count = 0
+        while preloader_train.end_flag == False:
+            batch = preloader_train.get_batch()
+            # logger.info("Got Batch")
+            if batch != None:
+                # logger.info("Training Batch is not None")
+                tensor_input, ground_truth, loss_mask, length_list = batch
+                pred_tensor, loss = train(net, net_optimizer, ctc_loss, tensor_input.to(device),
+                                          ground_truth.to(device), loss_mask.to(device), length_list.to(device))
+                loss_list_train.append(loss)
+                logger.info("Loss: {}".format(loss))
+                count += 1
+                logger.info("Train {}/{}".format(count, int(np.ceil(len(wav_path_list_train)/batch_size))))
+                # logger.info("Training")
+            else:
+                logger.info("Training Batch is None")
+
+        logger.info(loss_list_train)
+        train_loss = np.mean(np.asarray(loss_list_train))
+
+        logger.info("Mean Train Loss: {}".format(train_loss))
 
         # Start Training
 
