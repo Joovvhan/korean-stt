@@ -2,7 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4388d8f9-d2c8-4ed1-9d55-b82db53296a4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE_Data" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/NOTICE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/label_loader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/loader.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../notebooks/.ipynb_checkpoints/NSML_wav_to_model_on_NSML_dataset-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../notebooks/.ipynb_checkpoints/NSML_wav_to_model_on_NSML_dataset-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../notebooks/NSML_wav_to_model_on_NSML_dataset.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/../notebooks/NSML_wav_to_model_on_NSML_dataset.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,49 +20,91 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="542">
-              <caret line="949" lean-forward="true" selection-start-line="949" selection-end-line="949" />
+            <state relative-caret-position="459">
+              <caret line="305" column="58" lean-forward="true" selection-start-line="305" selection-start-column="58" selection-end-line="305" selection-end-column="58" />
               <folding>
-                <element signature="e#594#603#0" expanded="true" />
+                <element signature="e#595#610#0" expanded="true" />
+                <element signature="e#1425#1915#0" />
+                <element signature="e#1950#2108#0" />
+                <element signature="e#2172#2612#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/label_loader.py">
+        <entry file="file://$PROJECT_DIR$/hackathon.labels">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="342">
-              <caret line="18" column="4" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
+            <state relative-caret-position="317">
+              <caret line="491" column="37" lean-forward="true" selection-start-line="491" selection-start-column="37" selection-end-line="491" selection-end-column="37" />
+              <folding>
+                <element signature="e#24#36#0" expanded="true" />
+                <element signature="e#513#762#0" />
+                <element signature="e#810#1110#0" />
+                <element signature="e#1224#1876#0" />
+                <element signature="e#39#804#0" />
+                <element signature="e#849#1421#0" />
+                <element signature="e#1470#2312#0" />
+                <element signature="e#1878#2312#0" />
+                <element signature="e#2347#3144#0" />
+                <element signature="e#13700#13976#0" />
+                <element signature="e#14456#15472#0" />
+                <element signature="e#15522#16283#0" />
+                <element signature="e#17013#17584#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get_batch</find>
-      <find>create_mel</find>
-      <find>right</find>
-      <find>train(</find>
-      <find>label_to_string</find>
-      <find>EOS_token</find>
-      <find>PAD_token</find>
-      <find>index2char</find>
-      <find>script</find>
-      <find>BaseDataset</find>
-      <find>train</find>
+      <find>split_dataset</find>
+      <find>Initialized Evaluation</find>
+      <find>logger</find>
+      <find>threading</find>
+      <find>begin_epoch</find>
+      <find>loader</find>
+      <find>args.max</find>
+      <find>Batch</find>
+      <find>n_mels</find>
+      <find>shape</find>
+      <find>view</find>
+      <find>put</find>
       <find>queue</find>
-      <find>queue.</find>
-      <find>char2index</find>
-      <find>evaluate(</find>
-      <find>lev</find>
-      <find>get_distance</find>
+      <find>32</find>
+      <find>batch_size</find>
+      <find>get_bat</find>
+      <find>loss_mask</find>
+      <find>Decode</find>
+      <find>Threading_</find>
+      <find>pred_tensor</find>
+      <find>ground_truth</find>
+      <find>ground_truth_list.</find>
+      <find>ground_truth_size_list.</find>
+      <find>ground_truth_list</find>
+      <find>thread</find>
+      <find>.start</find>
+      <find>qsize</find>
+      <find>thread.start</find>
+      <find>bind_model</find>
       <find>evaluate</find>
     </findStrings>
   </component>
@@ -63,19 +114,16 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
+        <option value="$PROJECT_DIR$/models/utils.py" />
+        <option value="$PROJECT_DIR$/loader.py" />
+        <option value="$PROJECT_DIR$/label_loader.py" />
+        <option value="$PROJECT_DIR$/utils.py" />
         <option value="$PROJECT_DIR$/main.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectConfigurationFiles">
-    <option name="files">
-      <list>
-        <option value="$PROJECT_DIR$/.idea/vcs.xml" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds">
-    <option name="x" value="953" />
+  <component name="ProjectFrameBounds" extendedState="7">
+    <option name="x" value="-7" />
     <option name="width" value="974" />
     <option name="height" value="1047" />
   </component>
@@ -85,7 +133,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -93,14 +140,21 @@
               <item name="hackaton_submission" type="b2602c69:ProjectViewProjectNode" />
               <item name="hackaton_submission" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="hackaton_submission" type="b2602c69:ProjectViewProjectNode" />
+              <item name="hackaton_submission" type="462c0819:PsiDirectoryNode" />
+              <item name="evaluation" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../speech_hackathon_2019" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
@@ -129,42 +183,126 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="953" y="0" width="974" height="1047" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.08746049" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Python Console" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.329718" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/label_loader.py">
+    <entry file="file://$PROJECT_DIR$/models/utils.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LICENSE">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/LICENSE_Data">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/loader.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="18" column="4" selection-start-line="18" selection-start-column="4" selection-end-line="18" selection-end-column="4" />
+        <state relative-caret-position="758">
+          <caret line="56" selection-start-line="56" selection-end-line="56" />
+          <folding>
+            <element signature="e#594#603#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/NOTICE">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-871" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/label_loader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evaluation/data_loader.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#567#576#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/evaluation/evaluation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="798">
+          <caret line="74" column="28" selection-start-line="74" selection-start-column="10" selection-end-line="74" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.nsmlignore">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/setup.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/wavio.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-969">
+          <caret column="3" lean-forward="true" selection-start-column="3" selection-end-column="3" />
+          <folding>
+            <element signature="e#1614#1625#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="491" column="37" lean-forward="true" selection-start-line="491" selection-start-column="37" selection-end-line="491" selection-end-column="37" />
+          <folding>
+            <element signature="e#24#36#0" expanded="true" />
+            <element signature="e#513#762#0" />
+            <element signature="e#810#1110#0" />
+            <element signature="e#1224#1876#0" />
+            <element signature="e#39#804#0" />
+            <element signature="e#849#1421#0" />
+            <element signature="e#1470#2312#0" />
+            <element signature="e#1878#2312#0" />
+            <element signature="e#2347#3144#0" />
+            <element signature="e#13700#13976#0" />
+            <element signature="e#14456#15472#0" />
+            <element signature="e#15522#16283#0" />
+            <element signature="e#17013#17584#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hackathon.labels">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="542">
-          <caret line="949" lean-forward="true" selection-start-line="949" selection-end-line="949" />
+        <state relative-caret-position="459">
+          <caret line="305" column="58" lean-forward="true" selection-start-line="305" selection-start-column="58" selection-end-line="305" selection-end-column="58" />
           <folding>
-            <element signature="e#594#603#0" expanded="true" />
+            <element signature="e#595#610#0" expanded="true" />
+            <element signature="e#1425#1915#0" />
+            <element signature="e#1950#2108#0" />
+            <element signature="e#2172#2612#0" />
           </folding>
         </state>
       </provider>
