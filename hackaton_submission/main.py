@@ -251,14 +251,14 @@ def main():
 
         while not preloader_train.end_flag:
             batch = preloader_train.get_batch()
-            logger.info(psutil.virtual_memory())
-            logger.info("Got Batch")
+            # logger.info(psutil.virtual_memory())
+            # logger.info("Got Batch")
             if batch is not None:
-                logger.info("Training Batch is not None")
+                # logger.info("Training Batch is not None")
                 tensor_input, ground_truth, loss_mask, length_list, lev_ref_list = batch
                 pred_tensor, loss = train(net, net_optimizer, ctc_loss, tensor_input.to(device),
-                                          ground_truth.to(device), length_list.to(device))
-                logger.info(pred_tensor)
+                                          ground_truth.to(device), length_list.to(device), device)
+                # logger.info(pred_tensor)
                 loss_list_train.append(loss)
 
                 lev_pred_list = Decode_Prediction(pred_tensor, tokenizer)
@@ -268,7 +268,7 @@ def main():
 
                 count += 1
 
-                if count % 5 == 0:
+                if count % 10 == 0:
                     logger.info("Train {}/{}".format(count, int(np.ceil(len(wav_path_list_train) / batch_size))))
                     # logger.info("Train Loss {}".format(loss))
                     # logger.info("Train CER {}".format(dist / length))
@@ -303,7 +303,7 @@ def main():
             if batch is not None:
                 tensor_input, ground_truth_, loss_mask, length_list, lev_ref_list = batch
                 pred_tensor, loss = evaluate(net, ctc_loss, tensor_input.to(device), ground_truth_.to(device),
-                                              length_list.to(device))
+                                              length_list.to(device), device)
                 loss_list_eval.append(loss)
                 count += 1
                 # if count % 5 == 0:
