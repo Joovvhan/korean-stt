@@ -25,6 +25,8 @@ import torch.nn.functional as F
 import torch.optim as optim
 import Levenshtein as Lev
 
+######
+import psutil
 
 from datetime import datetime
 import scipy as sp
@@ -246,14 +248,17 @@ def main():
         total_dist = 0
         total_length = 0
 
+
         while not preloader_train.end_flag:
             batch = preloader_train.get_batch()
-            # logger.info("Got Batch")
+            logger.info(psutil.virtual_memory())
+            logger.info("Got Batch")
             if batch is not None:
-                # logger.info("Training Batch is not None")
+                logger.info("Training Batch is not None")
                 tensor_input, ground_truth, loss_mask, length_list, lev_ref_list = batch
                 pred_tensor, loss = train(net, net_optimizer, ctc_loss, tensor_input.to(device),
                                           ground_truth.to(device), length_list.to(device))
+                logger.info(pred_tensor)
                 loss_list_train.append(loss)
 
                 lev_pred_list = Decode_Prediction(pred_tensor, tokenizer)
