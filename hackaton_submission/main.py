@@ -184,7 +184,7 @@ def main():
     logger.info('Korean script path 0: {}'.format(korean_script_paths[0]))
 
     if args.debug == 'True':
-        idx = int(len(wav_paths)/100)
+        idx = int(len(wav_paths)/50)
         wav_paths = wav_paths[:idx]
         script_paths = script_paths[:idx]
         korean_script_paths = korean_script_paths[:idx]
@@ -236,6 +236,8 @@ def main():
 
         net.train()
 
+        # preloader_train = Threading_Batched_Preloader(wav_path_list_train, ground_truth_list_train,
+        #                                               korean_script_list_train, batch_size, num_mels)
         preloader_train.initialize_batch(num_thread)
         loss_list_train = list()
 
@@ -269,6 +271,8 @@ def main():
             else:
                 logger.info("Training Batch is None")
 
+        # del preloader_train
+
         # logger.info(loss_list_train)
         train_loss = np.mean(np.asarray(loss_list_train))
         train_cer = np.mean(np.asarray(total_dist/total_length))
@@ -276,6 +280,8 @@ def main():
         logger.info("Mean Train Loss: {}".format(train_loss))
         logger.info("Total Evaluation CER: {}".format(train_cer))
 
+        # preloader_eval = Threading_Batched_Preloader(wav_path_list_eval, ground_truth_list_eval,
+        #                                              korean_script_list_eval, batch_size, num_mels)
         preloader_eval.initialize_batch(num_thread)
         loss_list_eval = list()
 
@@ -309,13 +315,14 @@ def main():
             else:
                 logger.info("Training Batch is None")
 
+        # del preloader_eval
+
         eval_cer = total_dist / total_length
         eval_loss = np.mean(np.asarray(loss_list_eval))
         logger.info("Mean Evaluation Loss: {}".format(eval_loss))
         logger.info("Total Evaluation CER: {}".format(eval_cer))
 
         nsml.report(False, step=epoch, train_epoch__loss=train_loss, train_epoch__cer=train_cer, eval__loss=eval_loss, eval__cer=eval_cer)
-
 
         best_model = (eval_loss < best_loss)
         nsml.save(args.save_name)

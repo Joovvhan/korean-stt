@@ -37,6 +37,11 @@ db_ref = 160
 
 target_dict = dict()
 
+num_mels = 80
+
+MEL_FILTERS = librosa.filters.mel(sr=SAMPLE_RATE, n_fft=nsc, n_mels=num_mels)
+
+
 
 # Baseline Function
 def load_targets(path):
@@ -430,11 +435,9 @@ class Batching_Thread(threading.Thread):
 
         # logger.info('Before librosa')
 
-        mel_filters = librosa.filters.mel(sr=fs, n_fft=nsc, n_mels=self.num_mels)
-
         # logger.info('After librosa')
 
-        mel_specgram = np.matmul(mel_filters, Sxx)
+        mel_specgram = np.matmul(MEL_FILTERS, Sxx)
 
         # log10(0) is minus infinite, so replace mel_specgram values smaller than 'eps' as 'eps' (1e-8)
         log_mel_specgram = 20 * np.log10(np.maximum(mel_specgram, eps))
