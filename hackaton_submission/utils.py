@@ -21,7 +21,6 @@ import jamotools
 
 import Levenshtein as Lev
 
-
 import psutil
 
 logger = logging.getLogger('root')
@@ -441,6 +440,10 @@ class Batching_Thread(threading.Thread):
 
         Sxx = np.abs(Zxx)
 
+        # Cut-off paddings
+        coef = np.sum(Sxx, 0)
+        Sxx = Sxx[:, find_starting_point(coef):find_ending_point(coef)]
+
         # logger.info('Before librosa')
 
         # logger.info('After librosa')
@@ -653,3 +656,35 @@ def char_distance_list(ref_list, hyp_list):
         sum_length += length
 
     return sum_dist, sum_length
+
+
+def find_starting_point(coef, thres=0.1, margin=10):
+    starting_point = 0
+    for i in range(len(coef) - 1):
+        if (coef[i] <= thres and coef[i + 1] > thres):
+            starting_point = i
+            break
+
+    starting_point = starting_point - margin
+
+    if starting_point < 0:
+        starting_point = 0
+
+    return starting_point
+
+
+def find_ending_point(coef, thres=0.1, margin=10):
+
+    ending_point = len(coef) - 1
+
+    for i in range(len(coef) - 1, 0, -1):
+        if (coef[i] <= thres and coef[i - 1] > thres):
+            ending_point = i
+            break
+
+    ending_point = ending_point + margin
+
+    if ending_point > len(coef):
+        ending_point = len(coef)
+
+    return ending_point
