@@ -21,6 +21,9 @@ import jamotools
 
 import Levenshtein as Lev
 
+
+import psutil
+
 logger = logging.getLogger('root')
 FORMAT = "[%(asctime)s %(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format=FORMAT)
@@ -233,7 +236,7 @@ class Threading_Batched_Preloader():
         loading_sequence_len = len(loading_sequence)
 
         thread_size = int(np.ceil(loading_sequence_len / thread_num))
-
+        logger.info(thread_size)
         load_idxs_list = list()
         for i in range(thread_num):
             start_idx = i * thread_size
@@ -255,6 +258,7 @@ class Threading_Batched_Preloader():
 
         for thread in self.thread_list:
             thread.start()
+        logger.info('batch initialized')
         return
 
     def check_thread_flags(self):
@@ -274,12 +278,15 @@ class Threading_Batched_Preloader():
         return False
 
     def get_batch(self):
-        # logger.info("Called get_batch ")
+        logger.info("Called get_batch ")
+        logger.info(self.queue)
         while not (self.check_thread_flags()):
+            #logger.info("wErwer")
+            logger.info(psutil.virtual_memory())
             batch = self.queue.get()
-
+            logger.info(psutil.virtual_memory())
             if (batch != None):
-                # logger.info("Batch is Ready")
+                #logger.info("Batch is Ready")
                 batched_tensor = batch[0]
                 batched_ground_truth = batch[1]
                 batched_loss_mask = batch[2]
@@ -290,8 +297,9 @@ class Threading_Batched_Preloader():
 
             else:
                 logger.info("Loader Queue is empty")
-                time.sleep(1)
+                #time.sleep(1)
 
+        logger.info('get_batch finish')
         return None
 
 
