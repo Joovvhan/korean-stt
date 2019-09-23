@@ -19,24 +19,27 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="240" column="30" selection-start-line="240" selection-start-column="24" selection-end-line="240" selection-end-column="40" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/hackathon.labels">
           <provider selected="true" editor-type-id="text-editor" />
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="352">
+              <caret line="270" column="29" selection-start-line="270" selection-start-column="29" selection-end-line="270" selection-end-column="29" />
+              <folding>
+                <element signature="e#594#609#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="610">
-              <caret line="342" column="28" lean-forward="true" selection-start-line="342" selection-start-column="28" selection-end-line="342" selection-end-column="28" />
+            <state relative-caret-position="708">
+              <caret line="340" column="33" selection-start-line="340" selection-start-column="22" selection-end-line="340" selection-end-column="33" />
               <folding>
                 <element signature="e#24#36#0" expanded="true" />
               </folding>
@@ -55,36 +58,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>split_dataset</find>
-      <find>Initialized Evaluation</find>
-      <find>logger</find>
-      <find>threading</find>
-      <find>begin_epoch</find>
-      <find>loader</find>
-      <find>args.max</find>
-      <find>Batch</find>
-      <find>n_mels</find>
-      <find>shape</find>
-      <find>view</find>
-      <find>put</find>
-      <find>queue</find>
-      <find>32</find>
-      <find>batch_size</find>
-      <find>get_bat</find>
-      <find>loss_mask</find>
-      <find>Decode</find>
-      <find>Threading_</find>
-      <find>pred_tensor</find>
-      <find>ground_truth</find>
-      <find>ground_truth_list.</find>
-      <find>ground_truth_size_list.</find>
       <find>ground_truth_list</find>
       <find>thread</find>
       <find>.start</find>
-      <find>qsize</find>
       <find>thread.start</find>
       <find>bind_model</find>
+      <find>debug</find>
+      <find>print</find>
+      <find>pred_tensor</find>
+      <find>logger.</find>
+      <find>device</find>
+      <find>batch initi</find>
+      <find>batch(</find>
+      <find>get_batch</find>
+      <find>batch</find>
+      <find>create</find>
+      <find>create_mel</find>
+      <find>nsc</find>
+      <find>Batch Function</find>
+      <find>psutil</find>
+      <find>queue</find>
+      <find>qsize</find>
+      <find>self.queue.</find>
+      <find>queue.get</find>
+      <find>net</find>
+      <find>find_</find>
+      <find>ctc_loss</find>
       <find>evaluate</find>
+      <find>logger.info</find>
+      <find>training</find>
+      <find>train</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -112,6 +115,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -128,7 +132,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -176,7 +179,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Terminal" order="8" weight="0.3264642" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -223,22 +226,25 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="708">
+          <caret line="340" column="33" selection-start-line="340" selection-start-column="22" selection-end-line="340" selection-end-column="33" />
+          <folding>
+            <element signature="e#24#36#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/hackathon.labels">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="240" column="30" selection-start-line="240" selection-start-column="24" selection-end-line="240" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="610">
-          <caret line="342" column="28" lean-forward="true" selection-start-line="342" selection-start-column="28" selection-end-line="342" selection-end-column="28" />
+        <state relative-caret-position="352">
+          <caret line="270" column="29" selection-start-line="270" selection-start-column="29" selection-end-line="270" selection-end-column="29" />
           <folding>
-            <element signature="e#24#36#0" expanded="true" />
+            <element signature="e#594#609#0" expanded="true" />
           </folding>
         </state>
       </provider>

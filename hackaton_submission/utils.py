@@ -282,13 +282,15 @@ class Threading_Batched_Preloader():
         return False
 
     def get_batch(self):
-        logger.info("Called get_batch ")
-        logger.info(self.queue)
+        # logger.info("Called get_batch ")
+        # logger.info(self.queue)
         while not (self.check_thread_flags()):
             #logger.info("wErwer")
-            logger.info(psutil.virtual_memory())
+            # logger.info(psutil.virtual_memory())
+            # logger.info("Q Size Before: {}".format(self.queue.qsize()))
             batch = self.queue.get()
-            logger.info(psutil.virtual_memory())
+            # logger.info("Q Size After: {}".format(self.queue.qsize()))
+            # logger.info(psutil.virtual_memory())
             if (batch != None):
                 #logger.info("Batch is Ready")
                 batched_tensor = batch[0]
@@ -466,7 +468,7 @@ class Batching_Thread(threading.Thread):
         return tensor_input
 
 
-def train(net, optimizer, ctc_loss, input_tensor, ground_truth, target_lengths):
+def train(net, optimizer, ctc_loss, input_tensor, ground_truth, target_lengths, device):
     # Shape of the input tensor (B, T, F)
     # B: Number of a batch (8, 16, or 64 ...)
     # T: Temporal length of an input
@@ -485,7 +487,7 @@ def train(net, optimizer, ctc_loss, input_tensor, ground_truth, target_lengths):
     # S: Max length among true sentences
     truth = ground_truth
     # truth = truth.type(torch.cuda.LongTensor)
-    truth = truth.type(torch.LongTensor)
+    truth = truth.type(torch.LongTensor).to(device)
 
     input_lengths = torch.full(size=(batch_size,), fill_value=pred_tensor.shape[0], dtype=torch.long)
 
@@ -499,7 +501,7 @@ def train(net, optimizer, ctc_loss, input_tensor, ground_truth, target_lengths):
     return pred_tensor, loss.item() / ground_truth.shape[1]
 
 
-def evaluate(net, ctc_loss, input_tensor, ground_truth, target_lengths):
+def evaluate(net, ctc_loss, input_tensor, ground_truth, target_lengths, device):
     # Shape of the input tensor (B, T, F)
     # B: Number of a batch (8, 16, or 64 ...)
     # T: Temporal length of an input
@@ -514,7 +516,7 @@ def evaluate(net, ctc_loss, input_tensor, ground_truth, target_lengths):
     # S: Max length among true sentences
     truth = ground_truth
     # truth = truth.type(torch.cuda.LongTensor)
-    truth = truth.type(torch.LongTensor)
+    truth = truth.type(torch.LongTensor).to(device)
 
     input_lengths = torch.full(size=(batch_size,), fill_value=pred_tensor.shape[0], dtype=torch.long)
 
