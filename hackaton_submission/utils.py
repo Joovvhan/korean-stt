@@ -28,22 +28,18 @@ FORMAT = "[%(asctime)s %(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format=FORMAT)
 logger.setLevel(logging.INFO)
 
-SAMPLE_RATE = 16000
-frame_length_ms = 50
-frame_shift_ms = 25
-nsc = int(SAMPLE_RATE * frame_length_ms / 1000)
-nov = nsc - int(SAMPLE_RATE * frame_shift_ms / 1000)
-N_FFT = nsc
-eps = 1e-8
-db_ref = 160
+# SAMPLE_RATE = 16000
+# frame_length_ms = 50
+# frame_shift_ms = 25
+# nsc = int(SAMPLE_RATE * frame_length_ms / 1000)
+# nov = nsc - int(SAMPLE_RATE * frame_shift_ms / 1000)
+# N_FFT = nsc
+# eps = 1e-8
+# db_ref = 160
 
 target_dict = dict()
 
-num_mels = 80
-
-MEL_FILTERS = librosa.filters.mel(sr=SAMPLE_RATE, n_fft=nsc, n_mels=num_mels)
-
-
+# num_mels = 80
 
 # Baseline Function
 def load_targets(path):
@@ -208,7 +204,7 @@ class Mel2SeqNet(nn.Module):
 
 
 class Threading_Batched_Preloader():
-    def __init__(self, wav_path_list, ground_truth_list, korean_script_list, batch_size, num_mels):
+    def __init__(self, wav_path_list, ground_truth_list, korean_script_list, batch_size, num_mels, nsc_in_ms):
         super(Threading_Batched_Preloader).__init__()
         self.wav_path_list = wav_path_list
         self.total_num_input = len(wav_path_list)
@@ -224,6 +220,7 @@ class Threading_Batched_Preloader():
         self.queue = queue.Queue(self.qsize)
         self.thread_flags = list()
         self.num_mels = num_mels
+        self.nsc_in_ms = nsc_in_ms
 
     # Shuffle loading index and set end flag to false
     def initialize_batch(self, thread_num):
@@ -258,7 +255,7 @@ class Threading_Batched_Preloader():
 
         self.thread_list = [
             Batching_Thread(self.wav_path_list, self.ground_truth_list, self.korean_script_list, load_idxs_list[i], self.queue, self.batch_size,
-                            self.thread_flags, self.num_mels, i) for i in range(thread_num)]
+                            self.thread_flags, self.num_mels, self.nsc_in_ms, i) for i in range(thread_num)]
 
         for thread in self.thread_list:
             thread.start()
@@ -311,7 +308,7 @@ class Threading_Batched_Preloader():
 
 class Batching_Thread(threading.Thread):
 
-    def __init__(self, wav_path_list, ground_truth_list, korean_script_list, load_idxs_list, queue, batch_size, thread_flags, num_mels, id):
+    def __init__(self, wav_path_list, ground_truth_list, korean_script_list, load_idxs_list, queue, batch_size, thread_flags, num_mels, nsc_in_ms, id):
 
         threading.Thread.__init__(self)
         self.wav_path_list = wav_path_list
@@ -325,6 +322,7 @@ class Batching_Thread(threading.Thread):
         self.batch_size = batch_size
         self.thread_flags = thread_flags
         self.num_mels = num_mels
+        self.nsc_in_ms = nsc_in_ms
 
         logger.info("Batching Thread {} Initialized".format(self.id))
 
@@ -421,8 +419,8 @@ class Batching_Thread(threading.Thread):
 
     def create_mel(self, wav_path):
         fs = 16000
-        frame_length_ms = 50
-        frame_shift_ms = 25
+        frame_length_ms = self.nsc_in_ms
+        frame_shift_ms = frame_length_ms/2
         nsc = int(fs * frame_length_ms / 1000)
         nov = nsc - int(fs * frame_shift_ms / 1000)
         # nhop = int(fs * frame_shift_ms / 1000)
@@ -447,10 +445,10 @@ class Batching_Thread(threading.Thread):
         Sxx = Sxx[:, find_starting_point(coef):find_ending_point(coef)]
 
         # logger.info('Before librosa')
-
+        mel_filters = librosa.filters.mel(sr=fs, n_fft=nsc, n_mels=self.num_mels)
         # logger.info('After librosa')
 
-        mel_specgram = np.matmul(MEL_FILTERS, Sxx)
+        mel_specgram = np.matmul(mel_filters, Sxx)
 
         # log10(0) is minus infinite, so replace mel_specgram values smaller than 'eps' as 'eps' (1e-8)
         log_mel_specgram = 20 * np.log10(np.maximum(mel_specgram, eps))

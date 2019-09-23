@@ -272,6 +272,7 @@ def main():
                     logger.info("Train {}/{}".format(count, int(np.ceil(len(wav_path_list_train) / batch_size))))
                     # logger.info("Train Loss {}".format(loss))
                     # logger.info("Train CER {}".format(dist / length))
+                    logger.info("Shape of the Input Tensor: {}".format(tensor_input.shape))
                     logger.info("Shape of the Prediction Tensor: {}".format(pred_tensor.shape))
 
             else:
