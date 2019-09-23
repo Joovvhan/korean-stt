@@ -258,7 +258,6 @@ def main():
                 tensor_input, ground_truth, loss_mask, length_list, lev_ref_list = batch
                 pred_tensor, loss = train(net, net_optimizer, ctc_loss, tensor_input.to(device),
                                           ground_truth.to(device), length_list.to(device))
-                logger.info(pred_tensor)
                 loss_list_train.append(loss)
 
                 lev_pred_list = Decode_Prediction(pred_tensor, tokenizer)
@@ -267,10 +266,12 @@ def main():
                 total_length += length
 
                 count += 1
-
+                logger.info("count")
+                logger.info(count)
                 if count % 5 == 0:
                     logger.info("Train {}/{}".format(count, int(np.ceil(len(wav_path_list_train) / batch_size))))
-                    # logger.info("Train Loss {}".format(loss))
+                    logger.info(np.ceil(len(wav_path_list_train)))
+                    #logger.info("Train Loss {}".format(loss))
                     # logger.info("Train CER {}".format(dist / length))
 
             else:
@@ -308,6 +309,9 @@ def main():
                 count += 1
                 # if count % 5 == 0:
                 logger.info("Eval {}/{}".format(count, int(np.ceil(len(wav_path_list_eval) / batch_size))))
+                logger.info(count)
+                logger.info(np.ceil(len(wav_path_list_eval)))
+                logger.info(batch_size)
 
                 lev_pred_list = Decode_Prediction(pred_tensor, tokenizer)
                 dist, length = char_distance_list(lev_ref_list, lev_pred_list)
@@ -332,9 +336,9 @@ def main():
         best_model = (eval_loss < best_loss)
         nsml.save(args.save_name)
 
-        if best_model:
-            nsml.save('best')
-            best_loss = eval_loss
+        #if best_model:
+            #nsml.save('best')
+            #best_loss = eval_loss
 
 if __name__ == "__main__":
     main()
