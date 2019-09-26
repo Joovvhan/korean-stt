@@ -261,19 +261,21 @@ def main():
                 # logger.info(pred_tensor)
                 loss_list_train.append(loss)
 
-                lev_pred_list = Decode_Prediction(pred_tensor, tokenizer)
+                lev_pred_list, raw_sentence_list = Decode_Prediction(pred_tensor, tokenizer)
+
                 dist, length = char_distance_list(lev_ref_list, lev_pred_list)
                 total_dist += dist
                 total_length += length
 
                 count += 1
 
-                if count % 10 == 0:
+                if count % 50 == 0:
                     logger.info("Train {}/{}".format(count, int(np.ceil(len(wav_path_list_train) / batch_size))))
                     # logger.info("Train Loss {}".format(loss))
                     # logger.info("Train CER {}".format(dist / length))
-                    logger.info("Shape of the Input Tensor: {}".format(tensor_input.shape))
-                    logger.info("Shape of the Prediction Tensor: {}".format(pred_tensor.shape))
+                    # logger.info("Shape of the Input Tensor: {}".format(tensor_input.shape))
+                    # logger.info("Shape of the Prediction Tensor: {}".format(pred_tensor.shape))
+                    logger.info("{} -> {} -> {}".format(lev_ref_list[0], raw_sentence_list[0], lev_pred_list[0]))
 
             else:
                 logger.info("Training Batch is None")
@@ -311,11 +313,12 @@ def main():
                 # if count % 5 == 0:
                 logger.info("Eval {}/{}".format(count, int(np.ceil(len(wav_path_list_eval) / batch_size))))
 
-                lev_pred_list = Decode_Prediction(pred_tensor, tokenizer)
+                lev_pred_list, raw_sentence_list = Decode_Prediction(pred_tensor, tokenizer)
                 dist, length = char_distance_list(lev_ref_list, lev_pred_list)
                 total_dist += dist
                 total_length += length
 
+                logger.info("{} -> {} -> {}".format(lev_ref_list[0], raw_sentence_list[0], lev_pred_list[0]))
                 # logger.info("Eval Loss {}".format(loss))
                 # logger.info("Eval CER {}".format(dist/length))
 

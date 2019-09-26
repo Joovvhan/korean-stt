@@ -212,11 +212,11 @@ class Threading_Batched_Preloader():
         self.ground_truth_list = ground_truth_list
         self.korean_script_list = korean_script_list
         self.sentence_length_list = np.asarray(list(map(len, ground_truth_list)))
-        self.shuffle_step = 12
+        self.shuffle_step = 4
         self.loading_sequence = None
         self.end_flag = False
         self.batch_size = batch_size
-        self.qsize = 8
+        self.qsize = 4
         self.queue = queue.Queue(self.qsize)
         self.thread_flags = list()
         self.num_mels = num_mels
@@ -608,11 +608,13 @@ def get_korean_and_jamo_list(korean_script_paths):
 
 def Decode_Prediction(pred_tensor, tokenizer):
     decoded_list = list()
+    raw_sentence_list = list()
     for i in range(pred_tensor.shape[1]):
         _, CTC_index = pred_tensor[:, i, :].max(-1)
         index = Decode_CTC_Prediction(CTC_index)
         jamos = tokenizer.num2word(index)
         sentence = jamotools.join_jamos(''.join(jamos))
+        raw_sentence_list.append(sentence)
 
         not_com_jamo = re.compile(u'[^\u3130-\u3190]')
         filtered_sentence = ''.join(not_com_jamo.findall(sentence))
@@ -620,7 +622,8 @@ def Decode_Prediction(pred_tensor, tokenizer):
         filtered_sentence = filtered_sentence.replace('</s>', '')
 
         decoded_list.append(filtered_sentence)
-    return decoded_list
+
+    return decoded_list, raw_sentence_list
 
 
 def lev_num_to_lev_string(lev_num_list, index2char):
