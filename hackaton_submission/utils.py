@@ -430,6 +430,7 @@ class Batching_Thread(threading.Thread):
 
         (rate, width, sig) = wavio.readwav(wav_path)
         y = sig.ravel()
+        y = y / (2 ** 15)
 
         # logger.info('Shape of y: {}'.format(y.shape))
 
@@ -716,6 +717,10 @@ class Batching_Thread_v2(threading.Thread):
 
         (rate, width, sig) = wavio.readwav(wav_path)
         y = sig.ravel()
+        y = y / (2 ** 15)
+
+        # logger.info(np.max(y))
+        # logger.info(np.min(y))
 
         # logger.info('Shape of y: {}'.format(y.shape))
 

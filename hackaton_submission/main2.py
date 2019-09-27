@@ -180,6 +180,8 @@ def main():
     unicode_jamo_list = My_Unicode_Jamo_v2()
     logger.info(''.join(unicode_jamo_list))
 
+    logger.info('This is a new main2.py')
+
     tokenizer = Tokenizer(unicode_jamo_list)
     jamo_tokens = tokenizer.word2num(unicode_jamo_list)
     logger.info('Tokens: {}'.format(jamo_tokens))
