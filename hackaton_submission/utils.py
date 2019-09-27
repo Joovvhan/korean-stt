@@ -1017,6 +1017,20 @@ def Decode_Num_Script(tensor, index2char):
     return str_output
 
 
+def Decode_Lev(tensor, index2char):
+    str_output = list()
+
+    for i in range(tensor.shape[0]):
+        _, lev_idxs = tensor[i, :, :].max(-1)
+        lev_idxs = lev_idxs.detach().cpu().numpy()
+        decoded_sentence = list()
+        for idx in lev_idxs:
+            decoded_sentence.append(index2char[idx])
+        str_output.append(''.join(decoded_sentence))
+
+    return str_output
+
+
 def Decode_Lev_Prediction(tensor, index2char):
     str_output = list()
 
@@ -1056,18 +1070,7 @@ def Decode_CTC_Prediction_And_Batch(pred_tensor):
     return batched_lev_input
 
 
-def Decode_Lev(tensor, index2char):
-    str_output = list()
 
-    for i in range(tensor.shape[0]):
-        _, lev_idxs = tensor[i, :, :].max(-1)
-        lev_idxs = lev_idxs.detach().cpu().numpy()
-        decoded_sentence = list()
-        for idx in lev_idxs:
-            decoded_sentence.append(index2char[idx])
-        str_output.append(''.join(decoded_sentence))
-
-    return str_output
 
 
 def lev_num_to_lev_string(lev_num_list, index2char):

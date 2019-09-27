@@ -317,7 +317,7 @@ def main():
                                                                                  batched_num_script.to(device),
                                                                                  batched_num_script_loss_mask.to(device),
                                                                                  net_B_optimizer, net_B_criterion)
-                    pred_string_list = Decode_Lev(lev_pred, index2char)
+                    pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
                     seq2seq_loss_list_train.append(seq2seq_loss)
                     dist, length = char_distance_list(true_string_list, pred_string_list)
 
@@ -394,7 +394,7 @@ def main():
                                                                      batched_num_script.to(device),
                                                                      batched_num_script_loss_mask.to(device),
                                                                      net_B_criterion)
-                pred_string_list = Decode_Lev(lev_pred, index2char)
+                pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
                 seq2seq_loss_list_train.append(seq2seq_loss)
                 dist, length = char_distance_list(true_string_list, pred_string_list)
 
