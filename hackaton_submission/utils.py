@@ -1070,9 +1070,6 @@ def Decode_CTC_Prediction_And_Batch(pred_tensor):
     return batched_lev_input
 
 
-
-
-
 def lev_num_to_lev_string(lev_num_list, index2char):
     lev_str_list = list()
     for num_list in lev_num_list:
@@ -1343,6 +1340,82 @@ class Seq2SeqNet(nn.Module):
 
         return decoder_outputs, decoder_attentions, loss.item() / target_length
 
-    def net_infer(self):
+    def net_infer(self, input_tensor):
 
-        return 0
+        batch_size = input_tensor.shape[0]
+        input_length = input_tensor.shape[1]
+
+        input_tensor = input_tensor.long()
+
+        embedded_tensor = self.embedding_layer(input_tensor)
+        embedded_tensor = embedded_tensor.permute(1, 0, 2)
+
+        # (L, B)
+        encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
+
+        encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+
+        for ei in range(input_length):
+            embedded_slice = embedded_tensor[ei].unsqueeze(0)
+            encoder_output, encoder_hidden = self.encoder(
+                embedded_slice, encoder_hidden)
+            encoder_outputs[ei] = encoder_output
+
+        decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
+
+        encoder_hidden = encoder_outputs[-1, :, :].unsqueeze(0)
+
+        # (L, B, H) -> (B, L, H)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
+
+        # Override encoder_hidden
+        decoder_hidden = encoder_hidden
+
+        MAX_LEN = 100
+
+        decoder_outputs = torch.zeros([batch_size, MAX_LEN, len(self.char2index)])
+
+        for di in range(MAX_LEN):
+            decoder_input = self.embedding_layer_2(decoder_input_token)
+
+            decoder_output, decoder_hidden, _ = self.decoder(
+                decoder_input, decoder_hidden, encoder_outputs)
+
+            decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
+
+            decoder_outputs[:, di, :] = decoder_output
+
+            if decoder_input_token[0, 0] == self.char2index['</s>']:
+                decoder_outputs = decoder_outputs[:, :di, :]
+                return decoder_outputs
+
+        return decoder_outputs
+
+
+def CREATE_MEL(wav_path):
+    fs = 16000
+    frame_length_ms = 50
+    frame_shift_ms = frame_length_ms/2
+    nsc = int(fs * frame_length_ms / 1000)
+    nov = nsc - int(fs * frame_shift_ms / 1000)
+    eps = 1e-8
+    db_ref = 160
+    num_mels = 160
+
+    (rate, width, sig) = wavio.readwav(wav_path)
+    y = sig.ravel()
+    y = y / (2 ** 15)
+
+    f, t, Zxx = sp.signal.stft(y, fs=fs, nperseg=nsc, noverlap=nov)
+    Sxx = np.abs(Zxx)
+    coef = np.sum(Sxx, 0)
+    Sxx = Sxx[:, find_starting_point(coef):find_ending_point(coef)]
+    mel_filters = librosa.filters.mel(sr=fs, n_fft=nsc, n_mels=num_mels)
+    mel_specgram = np.matmul(mel_filters, Sxx)
+    log_mel_specgram = 20 * np.log10(np.maximum(mel_specgram, eps))
+
+    norm_log_mel_specgram = (log_mel_specgram + db_ref) / db_ref
+
+    input_spectrogram = norm_log_mel_specgram.T
+    tensor_input = torch.tensor(input_spectrogram).unsqueeze(0)
+    return tensor_input
