@@ -195,7 +195,7 @@ def main():
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     device = torch.device('cuda' if args.cuda else 'cpu')
 
-    net = Mel2SeqNet(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), device)
+    net = Mel2SeqNet_v2(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), device)
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr)
     ctc_loss = nn.CTCLoss().to(device)
 
