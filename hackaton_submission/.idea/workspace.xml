@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4388d8f9-d2c8-4ed1-9d55-b82db53296a4" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/main3.py" beforeDir="false" afterPath="$PROJECT_DIR$/main3.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/main_jw.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,29 +16,53 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="15" selection-start-line="15" selection-end-line="15" />
+            <state relative-caret-position="-8">
+              <caret line="139" column="11" selection-start-line="139" selection-start-column="11" selection-end-line="139" selection-end-column="11" />
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-8" />
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main3.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="748">
-              <caret line="129" column="32" lean-forward="true" selection-start-line="129" selection-start-column="32" selection-end-line="129" selection-end-column="32" />
+            <state relative-caret-position="-8">
               <folding>
                 <element signature="e#1198#1688#0" />
+                <element signature="e#1724#1882#0" />
+                <element signature="e#1947#2387#0" />
+                <element signature="e#2481#3996#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/main_jw.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="276">
+              <caret line="237" lean-forward="true" selection-start-line="237" selection-end-line="237" />
+              <folding>
+                <element signature="e#1198#1688#0" />
+                <element signature="e#1724#1882#0" />
+                <element signature="e#1947#2387#0" />
+                <element signature="e#2481#3996#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/utils.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="111">
-              <caret line="230" lean-forward="true" selection-start-line="230" selection-end-line="230" />
+            <state relative-caret-position="-271">
+              <caret line="207" column="20" selection-start-line="207" selection-start-column="6" selection-end-line="207" selection-end-column="20" />
               <folding>
                 <element signature="e#854#1103#0" />
                 <element signature="e#1172#1472#0" />
@@ -48,28 +72,11 @@
                 <element signature="e#3561#4133#0" />
                 <element signature="e#4183#5025#0" />
                 <element signature="e#5061#5858#0" />
-                <element signature="e#5693#6535#0" />
-                <element signature="e#6101#6535#0" />
-                <element signature="e#7411#8208#0" />
-                <element signature="e#5902#9829#0" />
-                <element signature="e#9878#15710#0" />
-                <element signature="e#15757#20003#0" />
-                <element signature="e#20055#27048#0" />
-                <element signature="e#27144#28092#0" />
-                <element signature="e#28180#29005#0" />
-                <element signature="e#29051#29327#0" />
-                <element signature="e#29394#29720#0" />
-                <element signature="e#29750#30764#0" />
-                <element signature="e#30797#31424#0" />
-                <element signature="e#31460#32172#0" />
-                <element signature="e#32231#32740#0" />
-                <element signature="e#32802#33748#0" />
-                <element signature="e#33813#34112#0" />
-                <element signature="e#34166#34849#0" />
-                <element signature="e#34899#35291#0" />
-                <element signature="e#35334#35680#0" />
-                <element signature="e#35734#36191#0" />
-                <element signature="e#36248#36832#0" />
+                <element signature="e#5911#6757#0" />
+                <element signature="e#6796#7599#0" />
+                <element signature="e#7643#11570#0" />
+                <element signature="e#11619#17451#0" />
+                <element signature="e#17498#21744#0" />
               </folding>
             </state>
           </provider>
@@ -92,6 +99,10 @@
       <find>net_train</find>
       <find>infer</find>
       <find>long</find>
+      <find>load</find>
+      <find>pred_tensor</find>
+      <find>ground_truth</find>
+      <find>mel2seqNet</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -102,12 +113,13 @@
       <list>
         <option value="$PROJECT_DIR$/main3.py" />
         <option value="$PROJECT_DIR$/utils.py" />
+        <option value="$PROJECT_DIR$/main_jw.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="-7" />
-    <option name="width" value="974" />
+    <option name="width" value="1208" />
     <option name="height" value="1047" />
   </component>
   <component name="ProjectId" id="1RDxNrshYm5g37uciTJwzJ7lmlG" />
@@ -133,8 +145,8 @@
   </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../speech_hackathon_2019" />
-    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -167,9 +179,10 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
+    <frame x="-7" y="0" width="1208" height="1047" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12328767" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.07948718" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -222,27 +235,34 @@
     </option>
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-8" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
+        <state relative-caret-position="-8">
+          <caret line="139" column="11" selection-start-line="139" selection-start-column="11" selection-end-line="139" selection-end-column="11" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main3.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="748">
-          <caret line="129" column="32" lean-forward="true" selection-start-line="129" selection-start-column="32" selection-end-line="129" selection-end-column="32" />
+        <state relative-caret-position="-8">
           <folding>
             <element signature="e#1198#1688#0" />
+            <element signature="e#1724#1882#0" />
+            <element signature="e#1947#2387#0" />
+            <element signature="e#2481#3996#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="230" lean-forward="true" selection-start-line="230" selection-end-line="230" />
+        <state relative-caret-position="-271">
+          <caret line="207" column="20" selection-start-line="207" selection-start-column="6" selection-end-line="207" selection-end-column="20" />
           <folding>
             <element signature="e#854#1103#0" />
             <element signature="e#1172#1472#0" />
@@ -252,28 +272,24 @@
             <element signature="e#3561#4133#0" />
             <element signature="e#4183#5025#0" />
             <element signature="e#5061#5858#0" />
-            <element signature="e#5693#6535#0" />
-            <element signature="e#6101#6535#0" />
-            <element signature="e#7411#8208#0" />
-            <element signature="e#5902#9829#0" />
-            <element signature="e#9878#15710#0" />
-            <element signature="e#15757#20003#0" />
-            <element signature="e#20055#27048#0" />
-            <element signature="e#27144#28092#0" />
-            <element signature="e#28180#29005#0" />
-            <element signature="e#29051#29327#0" />
-            <element signature="e#29394#29720#0" />
-            <element signature="e#29750#30764#0" />
-            <element signature="e#30797#31424#0" />
-            <element signature="e#31460#32172#0" />
-            <element signature="e#32231#32740#0" />
-            <element signature="e#32802#33748#0" />
-            <element signature="e#33813#34112#0" />
-            <element signature="e#34166#34849#0" />
-            <element signature="e#34899#35291#0" />
-            <element signature="e#35334#35680#0" />
-            <element signature="e#35734#36191#0" />
-            <element signature="e#36248#36832#0" />
+            <element signature="e#5911#6757#0" />
+            <element signature="e#6796#7599#0" />
+            <element signature="e#7643#11570#0" />
+            <element signature="e#11619#17451#0" />
+            <element signature="e#17498#21744#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/main_jw.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="237" lean-forward="true" selection-start-line="237" selection-end-line="237" />
+          <folding>
+            <element signature="e#1198#1688#0" />
+            <element signature="e#1724#1882#0" />
+            <element signature="e#1947#2387#0" />
+            <element signature="e#2481#3996#0" />
           </folding>
         </state>
       </provider>
