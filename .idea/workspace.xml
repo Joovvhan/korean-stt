@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ca409ed8-7009-4390-af74-854acf8c17db" name="Default Changelist" comment="" />
+    <list default="true" id="ca409ed8-7009-4390-af74-854acf8c17db" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hackaton_submission/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/hackaton_submission/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hackaton_submission/main_jw.py" beforeDir="false" afterPath="$PROJECT_DIR$/hackaton_submission/main_jw.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,7 +50,9 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
           </value>
         </entry>
       </map>

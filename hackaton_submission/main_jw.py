@@ -216,6 +216,18 @@ def main():
         nsml.load(checkpoint='best', session='team47/sr-hack-2019-dataset/' + args.load)
         nsml.save('saved')
 
+    for g in net_optimizer.param_groups:
+        g['lr'] = 1e-04
+
+    for g in net_B_optimizer.param_groups:
+        g['lr'] = 1e-04
+
+    for g in net_optimizer.param_groups:
+        logger.info(g['lr'])
+
+    for g in net_B_optimizer.param_groups:
+        logger.info(g['lr'])
+
     wav_paths, script_paths, korean_script_paths = get_paths(DATASET_PATH)
     logger.info('Korean script path 0: {}'.format(korean_script_paths[0]))
 
