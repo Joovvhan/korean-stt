@@ -1442,9 +1442,9 @@ class Seq2SeqNet(nn.Module):
         return decoder_outputs
 
 
-def CREATE_MEL(wav_path):
+def CREATE_MEL(wav_path, nsc_in_ms):
     fs = 16000
-    frame_length_ms = 50
+    frame_length_ms = nsc_in_ms
     frame_shift_ms = frame_length_ms/2
     nsc = int(fs * frame_length_ms / 1000)
     nov = nsc - int(fs * frame_shift_ms / 1000)

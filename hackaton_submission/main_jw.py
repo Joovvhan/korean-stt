@@ -127,7 +127,7 @@ def bind_model(net, net_B, net_optimizer=None, net_B_optimizer=None, index2char=
         net_B.eval()
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        input = CREATE_MEL(wav_path)
+        input = CREATE_MEL(wav_path, 40)
         input = input.type(torch.FloatTensor).to(device)
 
         pred_tensor = net(input)
