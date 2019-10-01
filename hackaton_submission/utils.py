@@ -1421,7 +1421,7 @@ class Seq2SeqNet(nn.Module):
         # Override encoder_hidden
         decoder_hidden = encoder_hidden
 
-        MAX_LEN = 100
+        MAX_LEN = 50
 
         decoder_outputs = torch.zeros([batch_size, MAX_LEN, len(self.char2index)])
 

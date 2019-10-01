@@ -20,20 +20,6 @@
       </list>
     </option>
   </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>create_mel</find>
-      <find>def train(</find>
-      <find>net_B</find>
-      <find>net_train</find>
-      <find>infer</find>
-      <find>long</find>
-      <find>load</find>
-      <find>pred_tensor</find>
-      <find>ground_truth</find>
-      <find>mel2seqNet</find>
-    </findStrings>
-  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>

@@ -217,10 +217,10 @@ def main():
         nsml.save('saved')
 
     for g in net_optimizer.param_groups:
-        g['lr'] = 1e-04
+        g['lr'] = 1e-05
 
     for g in net_B_optimizer.param_groups:
-        g['lr'] = 1e-04
+        g['lr'] = 1e-05
 
     for g in net_optimizer.param_groups:
         logger.info(g['lr'])
