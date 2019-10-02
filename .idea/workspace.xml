@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca409ed8-7009-4390-af74-854acf8c17db" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/hackaton_submission/main_jw_3.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hackaton_submission/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/hackaton_submission/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/hackaton_submission/main_jw.py" beforeDir="false" afterPath="$PROJECT_DIR$/hackaton_submission/main_jw.py" afterDir="false" />
@@ -19,7 +20,12 @@
   <component name="ProjectId" id="1RDlAkzi31VkPWze4zkDGQG6h1f" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/hackaton_submission" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/hackaton_submission" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">

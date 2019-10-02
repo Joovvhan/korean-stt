@@ -153,6 +153,27 @@ class Encoder(nn.Module):
         output_tensor, _ = self.gru(output_tensor)
         return output_tensor
 
+class Encoder_v3(nn.Module):
+    def __init__(self, D_in, H):
+        super(Encoder_v3, self).__init__()
+        self.fc = torch.nn.Linear(D_in, H)
+        self.relu = torch.nn.ReLU()
+        self.dropout = nn.Dropout(p=0.5)
+        self.gru_1 = nn.GRU(H, int(H / 2), bidirectional=True, batch_first=True)
+        self.gru_2 = nn.GRU(H, int(H / 2), bidirectional=True, batch_first=True)
+        self.gru_3 = nn.GRU(H, int(H / 2), bidirectional=True, batch_first=True)
+
+    def forward(self, input_tensor):
+        # (B, T, F)
+        output_tensor = self.fc(input_tensor)
+        output_tensor = self.relu(output_tensor)
+        output_tensor = self.dropout(output_tensor)
+        # (B, T, H)
+        output_tensor, _ = self.gru_1(output_tensor)
+        output_tensor, _ = self.gru_2(output_tensor)
+        output_tensor, _ = self.gru_3(output_tensor)
+
+        return output_tensor
 
 # My Decoder
 class CTC_Decoder(nn.Module):
@@ -179,7 +200,6 @@ class CTC_Decoder(nn.Module):
 
         return prediction_tensor
 
-
 class Mel2SeqNet(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, device):
         super(Mel2SeqNet, self).__init__()
@@ -202,7 +222,6 @@ class Mel2SeqNet(nn.Module):
         pred_tensor = pred_tensor.permute(1, 0, 2)
 
         return pred_tensor
-
 
 # My Decoder
 class CTC_Decoder_v2(nn.Module):
@@ -229,6 +248,33 @@ class CTC_Decoder_v2(nn.Module):
 
         return prediction_tensor
 
+class CTC_Decoder_v3(nn.Module):
+    def __init__(self, H, D_out, num_chars):
+        super(CTC_Decoder_v3, self).__init__()
+        self.fc_embed = nn.Linear(H, H)
+        self.relu_embed = torch.nn.ReLU()
+        self.dropout_embed = nn.Dropout(p=0.2)
+        self.gru_1 = nn.GRU(H, H, batch_first=True)
+        self.gru_2 = nn.GRU(H, H, batch_first=True)
+        self.gru_3 = nn.GRU(H, D_out, batch_first=True)
+        self.fc = nn.Linear(D_out, num_chars)
+        self.log_softmax = nn.LogSoftmax(dim=2)
+
+    def forward(self, input_tensor):
+        # (B, T, 2 * H/2)
+        output_tensor = self.fc_embed(input_tensor)
+        output_tensor = self.relu_embed(output_tensor)
+        output_tensor = self.dropout_embed(output_tensor)
+        # (B, T, H)
+        output_tensor, _ = self.gru_1(output_tensor)
+        output_tensor, _ = self.gru_2(output_tensor)
+        output_tensor, _ = self.gru_3(output_tensor)
+        # (B, T, H)
+        output_tensor = self.fc(output_tensor)
+        # (B, T, 75)
+        prediction_tensor = self.log_softmax(output_tensor)
+
+        return prediction_tensor
 
 class Mel2SeqNet_v2(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, device):
@@ -253,6 +299,28 @@ class Mel2SeqNet_v2(nn.Module):
 
         return pred_tensor
 
+class Mel2SeqNet_v3(nn.Module):
+    def __init__(self, D_in, H, D_out, num_chars, device):
+        super(Mel2SeqNet_v3, self).__init__()
+
+        self.encoder = Encoder_v3(D_in, H).to(device)
+        self.decoder = CTC_Decoder_v3(H, D_out, num_chars).to(device)
+
+        # Initialize weights with random uniform numbers with range
+        for param in self.encoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.decoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+
+    def forward(self, input_tensor):
+        batch_size = input_tensor.shape[0]
+        # (B, T, F) -> (B, T, H)
+        encoded_tensor = self.encoder(input_tensor)
+        # (B, T, H) -> (B, T, 75)
+        pred_tensor = self.decoder(encoded_tensor)
+        pred_tensor = pred_tensor.permute(1, 0, 2)
+
+        return pred_tensor
 
 class Threading_Batched_Preloader():
     def __init__(self, wav_path_list, ground_truth_list, korean_script_list, batch_size, num_mels, nsc_in_ms):
@@ -869,6 +937,7 @@ def evaluate(net, ctc_loss, input_tensor, ground_truth, target_lengths, device):
 
 def Decode_CTC_Prediction(prediction):
     CTC_pred = prediction.detach().cpu().numpy()
+
     result = list()
     last_elem = 0
     for i, elem in enumerate(CTC_pred):
@@ -1421,7 +1490,7 @@ class Seq2SeqNet(nn.Module):
         # Override encoder_hidden
         decoder_hidden = encoder_hidden
 
-        MAX_LEN = 50
+        MAX_LEN = 30
 
         decoder_outputs = torch.zeros([batch_size, MAX_LEN, len(self.char2index)])
 
@@ -1441,6 +1510,195 @@ class Seq2SeqNet(nn.Module):
 
         return decoder_outputs
 
+class Seq2SeqNet_v2(nn.Module):
+    def __init__(self, hidden_size, jamo_tokens, char2index, device):
+        super(Seq2SeqNet_v2, self).__init__()
+
+        self.hidden_size = hidden_size
+        self.device = device
+        self.jamo_tokens = jamo_tokens
+        self.char2index = char2index
+
+        self.embedding_layer = nn.Embedding(len(jamo_tokens), hidden_size).to(device)
+        self.embedding_layer_2 = nn.Embedding(len(char2index), hidden_size).to(device)
+        self.encoder = EncoderRNN(hidden_size).to(device)
+        self.decoder = AttnDecoderRNN(hidden_size, len(char2index), dropout_p=0.1).to(device)
+
+        for param in self.encoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.embedding_layer.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.embedding_layer_2.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.decoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+
+    def net_train(self, input_tensor, target_tensor, loss_mask, optimizer, criterion):
+
+        optimizer.zero_grad()
+
+        batch_size = input_tensor.shape[0]
+        input_length = input_tensor.shape[1]
+        target_length = target_tensor.shape[1]
+
+        input_tensor = input_tensor.long()
+        target_tensor = target_tensor.long()
+
+        embedded_tensor = self.embedding_layer(input_tensor)
+        embedded_tensor = embedded_tensor.permute(1, 0, 2)
+
+        # (L, B)
+        target_tensor = target_tensor.permute(1, 0)
+        encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
+
+        encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+
+        for ei in range(input_length):
+            embedded_slice = embedded_tensor[ei].unsqueeze(0)
+            encoder_output, encoder_hidden = self.encoder(
+                embedded_slice, encoder_hidden)
+            encoder_outputs[ei] = encoder_output
+
+        decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
+
+        # Override encoder hidden state
+        encoder_hidden = encoder_outputs[-1, :, :].unsqueeze(0)
+
+        # (L, B, H) -> (B, L, H)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
+
+        # Override encoder_hidden
+        decoder_hidden = encoder_hidden
+
+        decoder_attentions = torch.zeros([batch_size, input_length, target_length])
+        decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
+
+        loss = 0
+
+        for di in range(target_length):
+            decoder_input = self.embedding_layer_2(decoder_input_token)
+
+            decoder_output, decoder_hidden, decoder_attention = self.decoder(
+                decoder_input, decoder_hidden, encoder_outputs)
+
+            loss += torch.mean(criterion(decoder_output, target_tensor[di]) * loss_mask[:, di])
+
+            decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
+
+            decoder_attentions[:, :, di] = decoder_attention
+            decoder_outputs[:, di, :] = decoder_output
+
+        loss.backward()
+
+        optimizer.step()
+
+        return decoder_outputs, decoder_attentions, loss.item() / target_length
+
+    def net_eval(self, input_tensor, target_tensor, loss_mask, criterion):
+
+        batch_size = input_tensor.shape[0]
+        input_length = input_tensor.shape[1]
+        target_length = target_tensor.shape[1]
+
+        input_tensor = input_tensor.long()
+        target_tensor = target_tensor.long()
+
+        embedded_tensor = self.embedding_layer(input_tensor)
+        embedded_tensor = embedded_tensor.permute(1, 0, 2)
+
+        # (L, B)
+        target_tensor = target_tensor.permute(1, 0)
+        encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
+
+        encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+
+        for ei in range(input_length):
+            embedded_slice = embedded_tensor[ei].unsqueeze(0)
+            encoder_output, encoder_hidden = self.encoder(
+                embedded_slice, encoder_hidden)
+            encoder_outputs[ei] = encoder_output
+
+        decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
+
+        # Override encoder hidden state
+        encoder_hidden = encoder_outputs[-1, :, :].unsqueeze(0)
+
+        # (L, B, H) -> (B, L, H)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
+
+        # Override encoder_hidden
+        decoder_hidden = encoder_hidden
+
+        decoder_attentions = torch.zeros([batch_size, input_length, target_length])
+        decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
+
+        loss = 0
+
+        for di in range(target_length):
+            decoder_input = self.embedding_layer_2(decoder_input_token)
+
+            decoder_output, decoder_hidden, decoder_attention = self.decoder(
+                decoder_input, decoder_hidden, encoder_outputs)
+
+            loss += torch.mean(criterion(decoder_output, target_tensor[di]) * loss_mask[:, di])
+
+            decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
+
+            decoder_attentions[:, :, di] = decoder_attention
+            decoder_outputs[:, di, :] = decoder_output
+
+        return decoder_outputs, decoder_attentions, loss.item() / target_length
+
+    def net_infer(self, input_tensor):
+
+        batch_size = input_tensor.shape[0]
+        input_length = input_tensor.shape[1]
+
+        input_tensor = input_tensor.long()
+
+        embedded_tensor = self.embedding_layer(input_tensor)
+        embedded_tensor = embedded_tensor.permute(1, 0, 2)
+
+        # (L, B)
+        encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
+
+        encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+
+        for ei in range(input_length):
+            embedded_slice = embedded_tensor[ei].unsqueeze(0)
+            encoder_output, encoder_hidden = self.encoder(
+                embedded_slice, encoder_hidden)
+            encoder_outputs[ei] = encoder_output
+
+        decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
+
+        encoder_hidden = encoder_outputs[-1, :, :].unsqueeze(0)
+
+        # (L, B, H) -> (B, L, H)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
+
+        # Override encoder_hidden
+        decoder_hidden = encoder_hidden
+
+        MAX_LEN = 50
+
+        decoder_outputs = torch.zeros([batch_size, MAX_LEN, len(self.char2index)])
+
+        for di in range(MAX_LEN):
+            decoder_input = self.embedding_layer_2(decoder_input_token)
+
+            decoder_output, decoder_hidden, _ = self.decoder(
+                decoder_input, decoder_hidden, encoder_outputs)
+
+            decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
+
+            decoder_outputs[:, di, :] = decoder_output
+
+            if decoder_input_token[0, 0] == self.char2index['</s>']:
+                decoder_outputs = decoder_outputs[:, :di, :]
+                return decoder_outputs
+
+        return decoder_outputs
 
 def CREATE_MEL(wav_path, nsc_in_ms):
     fs = 16000

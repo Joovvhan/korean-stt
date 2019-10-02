@@ -155,7 +155,7 @@ def main():
     global PAD_token
 
     parser = argparse.ArgumentParser(description='Speech hackathon lilililill model')
-    parser.add_argument('--max_epochs', type=int, default=100, help='number of max epochs in training (default: 100)')
+    parser.add_argument('--max_epochs', type=int, default=1000, help='number of max epochs in training (default: 1000)')
     parser.add_argument('--no_cuda', action='store_true', default=False, help='disables CUDA training')
     parser.add_argument('--save_name', type=str, default='model', help='the name of model in nsml or local')
 
@@ -223,10 +223,10 @@ def main():
         nsml.save('saved')
 
     for g in net_optimizer.param_groups:
-        g['lr'] = 1e-05
+        g['lr'] = 1e-04
 
     for g in net_B_optimizer.param_groups:
-        g['lr'] = 1e-05
+        g['lr'] = 1e-04
 
     for g in net_optimizer.param_groups:
         logger.info(g['lr'])
@@ -256,7 +256,7 @@ def main():
 
     # 90% of the data will be used as train
     # split_index = int(0.9 * len(wav_paths))
-    split_index = int(0.95 * len(wav_paths))
+    split_index = int(0.90 * len(wav_paths))
 
     wav_path_list_train = wav_paths[:split_index]
     ground_truth_list_train = ground_truth_list[:split_index]
@@ -464,24 +464,24 @@ def main():
 
         logger.info("Inference Check")
 
-        net.eval()
-        net_B.eval()
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-        for wav_path in wav_path_list_eval:
-            input = CREATE_MEL(wav_path, 40)
-            input = input.type(torch.FloatTensor).to(device)
-
-            pred_tensor = net(input)
-
-            jamo_result = Decode_Prediction_No_Filtering(pred_tensor, tokenizer)
-
-            lev_input = Decode_CTC_Prediction_And_Batch(pred_tensor)
-            lev_pred = net_B.net_infer(lev_input.to(device))
-            pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
-
-            logger.info(pred_string_list[0])
-            logger.info(jamotools.join_jamos(jamo_result[0]).replace('<s>', ''))
+        # net.eval()
+        # net_B.eval()
+        # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        #
+        # for wav_path in wav_path_list_eval:
+        #     input = CREATE_MEL(wav_path, 40)
+        #     input = input.type(torch.FloatTensor).to(device)
+        #
+        #     pred_tensor = net(input)
+        #
+        #     jamo_result = Decode_Prediction_No_Filtering(pred_tensor, tokenizer)
+        #
+        #     lev_input = Decode_CTC_Prediction_And_Batch(pred_tensor)
+        #     lev_pred = net_B.net_infer(lev_input.to(device))
+        #     pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
+        #
+        #     logger.info(pred_string_list[0])
+        #     logger.info(jamotools.join_jamos(jamo_result[0]).replace('<s>', ''))
 
 if __name__ == "__main__":
     main()
