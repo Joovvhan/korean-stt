@@ -219,7 +219,7 @@ def main():
         return
 
     if args.load != None:
-        nsml.load(checkpoint='best', session='team47/sr-hack-2019-dataset/' + args.load)
+        nsml.load(checkpoint='model', session='team47/sr-hack-2019-dataset/' + args.load)
         nsml.save('saved')
 
     for g in net_optimizer.param_groups:
