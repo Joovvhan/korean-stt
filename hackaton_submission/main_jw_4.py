@@ -201,7 +201,7 @@ def main():
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     device = torch.device('cuda' if args.cuda else 'cpu')
 
-    net = Mel2SeqNet_v2(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), device)
+    net = Mel2SeqNet_v4(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), device)
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr)
     ctc_loss = nn.CTCLoss().to(device)
 
@@ -219,15 +219,14 @@ def main():
         return
 
     if args.load != None:
-        # nsml.load(checkpoint='saved', session='team47/sr-hack-2019-dataset/' + args.load)
-        nsml.load(checkpoint='model', session='team47/sr-hack-2019-dataset/' + args.load)
+        nsml.load(checkpoint='best', session='team47/sr-hack-2019-dataset/' + args.load)
         nsml.save('saved')
 
     for g in net_optimizer.param_groups:
         g['lr'] = 1e-06
 
     for g in net_B_optimizer.param_groups:
-        g['lr'] = 1e-06
+        g['lr'] = 1e-05
 
     for g in net_optimizer.param_groups:
         logger.info(g['lr'])
@@ -236,27 +235,28 @@ def main():
         logger.info(g['lr'])
 
     wav_paths, script_paths, korean_script_paths = get_paths(DATASET_PATH)
-    logger.info('Korean script path 0: {}'.format(korean_script_paths[0]))
+    # logger.info('Korean script path 0: {}'.format(korean_script_paths[0]))
 
-    logger.info('wav_paths len: {}'.format(len(wav_paths)))
-    logger.info('script_paths len: {}'.format(len(script_paths)))
-    logger.info('korean_script_paths len: {}'.format(len(korean_script_paths)))
+    # logger.info('wav_paths len: {}'.format(len(wav_paths)))
+    # logger.info('script_paths len: {}'.format(len(script_paths)))
+    # logger.info('korean_script_paths len: {}'.format(len(korean_script_paths)))
 
     # Load Korean Scripts
 
     korean_script_list, jamo_script_list = get_korean_and_jamo_list_v2(korean_script_paths)
 
-    logger.info('Korean script 0: {}'.format(korean_script_list[0]))
-    logger.info('Korean script 0 length: {}'.format(len(korean_script_list[0])))
-    logger.info('Jamo script 0: {}'.format(jamo_script_list[0]))
-    logger.info('Jamo script 0 length: {}'.format(len(jamo_script_list[0])))
+    # logger.info('Korean script 0: {}'.format(korean_script_list[0]))
+    # logger.info('Korean script 0 length: {}'.format(len(korean_script_list[0])))
+    # logger.info('Jamo script 0: {}'.format(jamo_script_list[0]))
+    # logger.info('Jamo script 0 length: {}'.format(len(jamo_script_list[0])))
 
     script_path_list = get_script_list(script_paths, SOS_token, EOS_token)
 
     ground_truth_list = [(tokenizer.word2num(['<s>'] + list(jamo_script_list[i]) + ['</s>'])) for i in range(len(jamo_script_list))]
 
     # 90% of the data will be used as train
-    split_index = int(0.95 * len(wav_paths))
+    split_index = int(0.9 * len(wav_paths))
+    # split_index = int(0.5 * len(wav_paths))
 
     wav_path_list_train = wav_paths[:split_index]
     ground_truth_list_train = ground_truth_list[:split_index]
@@ -330,24 +330,24 @@ def main():
                                                                                              net_B_optimizer,
                                                                                              net_B_criterion)
 
-                pred_string_list_ref = Decode_Lev_Prediction(lev_pred_ref, index2char)
-                seq2seq_loss_list_train_ref.append(seq2seq_loss_ref)
-                dist_ref, length_ref = char_distance_list(true_string_list, pred_string_list_ref)
+                    pred_string_list_ref = Decode_Lev_Prediction(lev_pred_ref, index2char)
+                    seq2seq_loss_list_train_ref.append(seq2seq_loss_ref)
+                    dist_ref, length_ref = char_distance_list(true_string_list, pred_string_list_ref)
 
-                pred_string_list = [None]
+                    pred_string_list = [None]
 
-                dist = 0
-                length = 0
+                    dist = 0
+                    length = 0
 
-                if (loss < args.loss_lim):
-                    lev_input = Decode_CTC_Prediction_And_Batch(pred_tensor)
-                    lev_pred, attentions, seq2seq_loss = net_B.net_train(lev_input.to(device),
-                                                                                 batched_num_script.to(device),
-                                                                                 batched_num_script_loss_mask.to(device),
-                                                                                 net_B_optimizer, net_B_criterion)
-                    pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
-                    seq2seq_loss_list_train.append(seq2seq_loss)
-                    dist, length = char_distance_list(true_string_list, pred_string_list)
+                    if (loss < args.loss_lim):
+                        lev_input = Decode_CTC_Prediction_And_Batch(pred_tensor)
+                        lev_pred, attentions, seq2seq_loss = net_B.net_train(lev_input.to(device),
+                                                                                     batched_num_script.to(device),
+                                                                                     batched_num_script_loss_mask.to(device),
+                                                                                     net_B_optimizer, net_B_criterion)
+                        pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
+                        seq2seq_loss_list_train.append(seq2seq_loss)
+                        dist, length = char_distance_list(true_string_list, pred_string_list)
 
                 total_dist_ref += dist_ref
                 total_length_ref += length_ref

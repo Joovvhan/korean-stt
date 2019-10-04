@@ -201,7 +201,7 @@ def main():
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     device = torch.device('cuda' if args.cuda else 'cpu')
 
-    net = Mel2SeqNet_v2(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), device)
+    net = Mel2SeqNet_v3(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), device)
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr)
     ctc_loss = nn.CTCLoss().to(device)
 
@@ -219,7 +219,6 @@ def main():
         return
 
     if args.load != None:
-        # nsml.load(checkpoint='saved', session='team47/sr-hack-2019-dataset/' + args.load)
         nsml.load(checkpoint='model', session='team47/sr-hack-2019-dataset/' + args.load)
         nsml.save('saved')
 
@@ -227,7 +226,7 @@ def main():
         g['lr'] = 1e-06
 
     for g in net_B_optimizer.param_groups:
-        g['lr'] = 1e-06
+        g['lr'] = 1e-05
 
     for g in net_optimizer.param_groups:
         logger.info(g['lr'])
@@ -236,27 +235,28 @@ def main():
         logger.info(g['lr'])
 
     wav_paths, script_paths, korean_script_paths = get_paths(DATASET_PATH)
-    logger.info('Korean script path 0: {}'.format(korean_script_paths[0]))
+    # logger.info('Korean script path 0: {}'.format(korean_script_paths[0]))
 
-    logger.info('wav_paths len: {}'.format(len(wav_paths)))
-    logger.info('script_paths len: {}'.format(len(script_paths)))
-    logger.info('korean_script_paths len: {}'.format(len(korean_script_paths)))
+    # logger.info('wav_paths len: {}'.format(len(wav_paths)))
+    # logger.info('script_paths len: {}'.format(len(script_paths)))
+    # logger.info('korean_script_paths len: {}'.format(len(korean_script_paths)))
 
     # Load Korean Scripts
 
     korean_script_list, jamo_script_list = get_korean_and_jamo_list_v2(korean_script_paths)
 
-    logger.info('Korean script 0: {}'.format(korean_script_list[0]))
-    logger.info('Korean script 0 length: {}'.format(len(korean_script_list[0])))
-    logger.info('Jamo script 0: {}'.format(jamo_script_list[0]))
-    logger.info('Jamo script 0 length: {}'.format(len(jamo_script_list[0])))
+    # logger.info('Korean script 0: {}'.format(korean_script_list[0]))
+    # logger.info('Korean script 0 length: {}'.format(len(korean_script_list[0])))
+    # logger.info('Jamo script 0: {}'.format(jamo_script_list[0]))
+    # logger.info('Jamo script 0 length: {}'.format(len(jamo_script_list[0])))
 
     script_path_list = get_script_list(script_paths, SOS_token, EOS_token)
 
     ground_truth_list = [(tokenizer.word2num(['<s>'] + list(jamo_script_list[i]) + ['</s>'])) for i in range(len(jamo_script_list))]
 
     # 90% of the data will be used as train
-    split_index = int(0.95 * len(wav_paths))
+    split_index = int(0.9 * len(wav_paths))
+    # split_index = int(0.5 * len(wav_paths))
 
     wav_path_list_train = wav_paths[:split_index]
     ground_truth_list_train = ground_truth_list[:split_index]
@@ -357,7 +357,7 @@ def main():
 
                 count += 1
 
-                if count % 25 == 0:
+                if count % 15 == 0:
                     logger.info("Train: Count {} | {} => {}".format(count, true_string_list[0], pred_string_list_ref[0]))
 
                     logger.info("Train: Count {} | {} => {} => {}".format(count, true_string_list[0], jamo_result[0],
@@ -435,7 +435,7 @@ def main():
 
                 ####################
 
-                if count % 10 == 0:
+                if count % 15 == 0:
                     logger.info("Eval: Count {} | {} => {}".format(count, true_string_list[0], pred_string_list_ref[0]))
 
                     logger.info("Eval: Count {} | {} => {} => {}".format(count, true_string_list[0], jamo_result[0],
