@@ -29,20 +29,57 @@ FORMAT = "[%(asctime)s %(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format=FORMAT)
 logger.setLevel(logging.INFO)
 
-# SAMPLE_RATE = 16000
-# frame_length_ms = 50
-# frame_shift_ms = 25
-# nsc = int(SAMPLE_RATE * frame_length_ms / 1000)
-# nov = nsc - int(SAMPLE_RATE * frame_shift_ms / 1000)
-# N_FFT = nsc
-# eps = 1e-8
-# db_ref = 160
-
 target_dict = dict()
 
-# num_mels = 80
-
 # Baseline Function
+
+def label_to_string(labels):
+    if len(labels.shape) == 1:
+        sent = str()
+        for i in labels:
+            if i.item() == EOS_token:
+                break
+            sent += index2char[i.item()]
+        return sent
+
+    elif len(labels.shape) == 2:
+        sents = list()
+        for i in labels:
+            sent = str()
+            for j in i:
+                if j.item() == EOS_token:
+                    break
+                sent += index2char[j.item()]
+            sents.append(sent)
+
+        return sents
+
+
+def char_distance(ref, hyp):
+    ref = ref.replace(' ', '')
+    hyp = hyp.replace(' ', '')
+
+    dist = Lev.distance(hyp, ref)
+    length = len(ref.replace(' ', ''))
+
+    return dist, length
+
+
+def get_distance(ref_labels, hyp_labels, display=False):
+    total_dist = 0
+    total_length = 0
+    for i in range(len(ref_labels)):
+        ref = label_to_string(ref_labels[i])
+        hyp = label_to_string(hyp_labels[i])
+        dist, length = char_distance(ref, hyp)
+        total_dist += dist
+        total_length += length
+        if display:
+            cer = total_dist / total_length
+            logger.debug('%d (%0.4f)\n(%s)\n(%s)' % (i, cer, ref, hyp))
+    return total_dist, total_length
+
+
 def load_targets(path):
     with open(path, 'r') as f:
         for no, line in enumerate(f):
@@ -153,6 +190,7 @@ class Encoder(nn.Module):
         output_tensor, _ = self.gru(output_tensor)
         return output_tensor
 
+
 class Encoder_v3(nn.Module):
     def __init__(self, D_in, H):
         super(Encoder_v3, self).__init__()
@@ -174,6 +212,7 @@ class Encoder_v3(nn.Module):
         output_tensor, _ = self.gru_3(output_tensor)
 
         return output_tensor
+
 
 # My Decoder
 class CTC_Decoder(nn.Module):
@@ -199,6 +238,7 @@ class CTC_Decoder(nn.Module):
         prediction_tensor = self.log_softmax(output_tensor)
 
         return prediction_tensor
+
 
 class Mel2SeqNet(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, device):
@@ -392,6 +432,79 @@ class Mel2SeqNet_v4(nn.Module):
 
         self.encoder = Encoder_v4(D_in, H).to(device)
         self.decoder = CTC_Decoder_v4(H, D_out, num_chars).to(device)
+
+        # Initialize weights with random uniform numbers with range
+        for param in self.encoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.decoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+
+    def forward(self, input_tensor):
+        batch_size = input_tensor.shape[0]
+        # (B, T, F) -> (B, T, H)
+        encoded_tensor = self.encoder(input_tensor)
+        # (B, T, H) -> (B, T, 75)
+        pred_tensor = self.decoder(encoded_tensor)
+        pred_tensor = pred_tensor.permute(1, 0, 2)
+
+        return pred_tensor
+
+
+class Encoder_General(nn.Module):
+    def __init__(self, D_in, H, num_layers):
+        super(Encoder_General, self).__init__()
+        self.fc = torch.nn.Linear(D_in, H)
+        self.relu = torch.nn.ReLU()
+        self.dropout = nn.Dropout(p=0.2)
+
+        self.gru_layers = nn.ModuleList([nn.GRU(H, int(H / 2), bidirectional=True, batch_first=True) for i in range(num_layers)])
+
+    def forward(self, input_tensor):
+        # (B, T, F)
+        output_tensor = self.fc(input_tensor)
+        output_tensor = self.relu(output_tensor)
+        output_tensor = self.dropout(output_tensor)
+        # (B, T, H)
+        for layer in self.gru_layers:
+            output_tensor, _ = layer(output_tensor)
+
+        return output_tensor
+
+
+class CTC_Decoder_General(nn.Module):
+    def __init__(self, H, D_out, num_chars, num_layers):
+        super(CTC_Decoder_General, self).__init__()
+        self.fc_embed = nn.Linear(H, H)
+        self.relu_embed = torch.nn.ReLU()
+        self.dropout_embed = nn.Dropout(p=0.2)
+
+        self.gru_layers = nn.ModuleList([nn.GRU(H, D_out, batch_first=True)] + [nn.GRU(D_out, D_out, batch_first=True) for i in range(num_layers - 1)])
+
+        self.fc = nn.Linear(D_out, num_chars)
+        self.log_softmax = nn.LogSoftmax(dim=2)
+
+    def forward(self, input_tensor):
+        # (B, T, 2 * H/2)
+        output_tensor = self.fc_embed(input_tensor)
+        output_tensor = self.relu_embed(output_tensor)
+        output_tensor = self.dropout_embed(output_tensor)
+        # (B, T, H)
+        for layer in self.gru_layers:
+            output_tensor, _ = layer(output_tensor)
+        # (B, T, H)
+        output_tensor = self.fc(output_tensor)
+        # (B, T, 75)
+        prediction_tensor = self.log_softmax(output_tensor)
+
+        return prediction_tensor
+
+
+class Mel2SeqNet_General(nn.Module):
+    def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
+        super(Mel2SeqNet_General, self).__init__()
+
+        self.encoder = Encoder_General(D_in, H, num_layers).to(device)
+        self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
 
         # Initialize weights with random uniform numbers with range
         for param in self.encoder.parameters():
@@ -803,7 +916,7 @@ class Batching_Thread_v2(threading.Thread):
         self.nsc_in_ms = nsc_in_ms
         self.is_train = is_train
 
-        logger.info("Batching Thread {} Initialized".format(self.id))
+        # logger.info("Batching Thread {} Initialized".format(self.id))
 
     def run(self):
 
@@ -920,40 +1033,16 @@ class Batching_Thread_v2(threading.Thread):
         # nhop = int(fs * frame_shift_ms / 1000)
         eps = 1e-8
         db_ref = 160
-
         (rate, width, sig) = wavio.readwav(wav_path)
         y = sig.ravel()
         y = y / (2 ** 15)
-
-        # logger.info(np.max(y))
-        # logger.info(np.min(y))
-
-        # logger.info('Shape of y: {}'.format(y.shape))
-
-        # y, sr = librosa.core.load(wav_path, sr=fs)
-
         f, t, Zxx = sp.signal.stft(y, fs=fs, nperseg=nsc, noverlap=nov)
-
-        # logger.info('After STFT')
-
         Sxx = np.abs(Zxx)
-
-        # Cut-off paddings
         coef = np.sum(Sxx, 0)
         Sxx = Sxx[:, find_starting_point(coef):find_ending_point(coef)]
-
-        # logger.info('Before librosa')
         mel_filters = librosa.filters.mel(sr=fs, n_fft=nsc, n_mels=self.num_mels)
-        # logger.info('After librosa')
-
         mel_specgram = np.matmul(mel_filters, Sxx)
-
-        # log10(0) is minus infinite, so replace mel_specgram values smaller than 'eps' as 'eps' (1e-8)
         log_mel_specgram = 20 * np.log10(np.maximum(mel_specgram, eps))
-
-        # 20 * log10(eps) = 20 * -8 = -160
-        # -160 is the smallest value
-        # Add 160 and divide by 160 => Normalize value between 0 and 1
         norm_log_mel_specgram = (log_mel_specgram + db_ref) / db_ref
 
         # (F, T) -> (T, F)
@@ -1598,6 +1687,7 @@ class Seq2SeqNet(nn.Module):
 
         return decoder_outputs
 
+
 class Seq2SeqNet_v2(nn.Module):
     def __init__(self, hidden_size, jamo_tokens, char2index, device):
         super(Seq2SeqNet_v2, self).__init__()
@@ -1787,6 +1877,7 @@ class Seq2SeqNet_v2(nn.Module):
                 return decoder_outputs
 
         return decoder_outputs
+
 
 def CREATE_MEL(wav_path, nsc_in_ms):
     fs = 16000

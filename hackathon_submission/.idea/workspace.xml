@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="4388d8f9-d2c8-4ed1-9d55-b82db53296a4" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/../hackathon_submission/main_round_1.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../hackathon_submission/ssh" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/hackaton_submission.iml" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/.idea/hackaton_submission.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.nsmlignore" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/.nsmlignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/data_loader.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/evaluation/data_loader.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/evaluation/evaluation.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/evaluation/evaluation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hackathon.labels" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/hackathon.labels" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/deprecated/main_legacy.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main2.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/deprecated/main2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/deprecated/main3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_jw.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/deprecated/main_jw.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_jw_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/deprecated/main_jw_3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_jw_3_re.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/main_jw_3_re.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main_jw_4.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/main_jw_4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/DecoderRNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/models/DecoderRNN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/EncoderRNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/models/EncoderRNN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/models/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/attention.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/models/attention.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/baseRNN.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/models/baseRNN.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/seq2seq.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/models/seq2seq.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ssh" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/deprecated/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/wavio.py" beforeDir="false" afterPath="$PROJECT_DIR$/../hackathon_submission/wavio.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="1RDxNrshYm5g37uciTJwzJ7lmlG" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/deprecated" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="C:\Users\JW\Documents\Github\korean-stt\hackaton_submission" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="4388d8f9-d2c8-4ed1-9d55-b82db53296a4" name="Default Changelist" comment="" />
+      <created>1568898181475</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1568898181475</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
