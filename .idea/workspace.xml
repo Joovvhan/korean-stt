@@ -2,8 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca409ed8-7009-4390-af74-854acf8c17db" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hackaton_submission/main_jw_3.py" beforeDir="false" afterPath="$PROJECT_DIR$/hackaton_submission/main_jw_3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hackathon_submission/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/hackathon_submission/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hackathon_submission/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/hackathon_submission/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/.idea/hackaton_submission.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/.idea/workspace.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/.nsmlignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/evaluation/data_loader.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/evaluation/evaluation.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/hackathon.labels" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/main.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/models/DecoderRNN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/models/EncoderRNN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/models/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/models/attention.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/models/baseRNN.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/models/seq2seq.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/setup.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/song/hackaton_submission/wavio.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,13 +33,123 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/hackathon_submission/main_round_1.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="10976">
+              <caret line="412" selection-start-line="412" selection-end-line="415" selection-end-column="36" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/hackathon_submission/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="465">
+              <caret line="552" column="32" lean-forward="true" selection-start-line="552" selection-start-column="32" selection-end-line="552" selection-end-column="32" />
+              <folding>
+                <element signature="e#628#1118#0" />
+                <element signature="e#1154#1310#0" />
+                <element signature="e#1374#1813#0" />
+                <element signature="e#1844#2093#0" />
+                <element signature="e#2162#2462#0" />
+                <element signature="e#2528#3180#0" />
+                <element signature="e#3235#3699#0" />
+                <element signature="e#3740#4505#0" />
+                <element signature="e#4002#4174#0" />
+                <element signature="e#4551#5123#0" />
+                <element signature="e#5159#6007#0" />
+                <element signature="e#6057#6899#0" />
+                <element signature="e#6935#7732#0" />
+                <element signature="e#7784#8630#0" />
+                <element signature="e#8670#9730#0" />
+                <element signature="e#9769#10572#0" />
+                <element signature="e#10611#11417#0" />
+                <element signature="e#11453#12569#0" />
+                <element signature="e#12609#13879#0" />
+                <element signature="e#13918#14724#0" />
+                <element signature="e#14765#15449#0" />
+                <element signature="e#15494#16496#0" />
+                <element signature="e#16534#17087#0" />
+                <element signature="e#16537#17221#0" />
+                <element signature="e#16540#17397#0" />
+                <element signature="e#17441#18298#0" />
+                <element signature="e#17441#21368#0" />
+                <element signature="e#21417#27249#0" />
+                <element signature="e#27296#31542#0" />
+                <element signature="e#31594#38005#0" />
+                <element signature="e#38101#39049#0" />
+                <element signature="e#39137#39962#0" />
+                <element signature="e#40008#40285#0" />
+                <element signature="e#40352#40678#0" />
+                <element signature="e#40708#41722#0" />
+                <element signature="e#41755#42382#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>logger</find>
+      <find>logger.info</find>
+      <find>get_korean_and_jam</find>
+      <find>loca</find>
+      <find>local</find>
+    </findStrings>
+    <replaceStrings>
+      <replace>print</replace>
+    </replaceStrings>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/song/utils_local.py" />
+        <option value="$PROJECT_DIR$/hackathon_submission/utils.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="953" />
+    <option name="width" value="974" />
+    <option name="height" value="1047" />
+  </component>
   <component name="ProjectId" id="1RDlAkzi31VkPWze4zkDGQG6h1f" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="korean-stt" type="b2602c69:ProjectViewProjectNode" />
+              <item name="korean-stt" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="korean-stt" type="b2602c69:ProjectViewProjectNode" />
+              <item name="korean-stt" type="462c0819:PsiDirectoryNode" />
+              <item name="hackathon_submission" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+    </panes>
+  </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/hackaton_submission" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -49,17 +181,127 @@
     </task>
     <servers />
   </component>
+  <component name="ToolWindowManager">
+    <frame x="953" y="0" width="974" height="1047" extended-state="0" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.19551282" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
             <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
               <option name="COLUMN_ORDER" />
             </State>
           </value>
         </entry>
       </map>
     </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/song/main_local.ipynb">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/song/utils_local.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="648">
+          <caret line="1926" column="52" selection-start-line="1926" selection-start-column="52" selection-end-line="1926" selection-end-column="52" />
+          <folding>
+            <element signature="e#24#36#0" expanded="true" />
+            <element signature="e#44258#45206#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hackathon_submission/main_round_1.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10976">
+          <caret line="412" selection-start-line="412" selection-end-line="415" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/hackathon_submission/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="552" column="32" lean-forward="true" selection-start-line="552" selection-start-column="32" selection-end-line="552" selection-end-column="32" />
+          <folding>
+            <element signature="e#628#1118#0" />
+            <element signature="e#1154#1310#0" />
+            <element signature="e#1374#1813#0" />
+            <element signature="e#1844#2093#0" />
+            <element signature="e#2162#2462#0" />
+            <element signature="e#2528#3180#0" />
+            <element signature="e#3235#3699#0" />
+            <element signature="e#3740#4505#0" />
+            <element signature="e#4002#4174#0" />
+            <element signature="e#4551#5123#0" />
+            <element signature="e#5159#6007#0" />
+            <element signature="e#6057#6899#0" />
+            <element signature="e#6935#7732#0" />
+            <element signature="e#7784#8630#0" />
+            <element signature="e#8670#9730#0" />
+            <element signature="e#9769#10572#0" />
+            <element signature="e#10611#11417#0" />
+            <element signature="e#11453#12569#0" />
+            <element signature="e#12609#13879#0" />
+            <element signature="e#13918#14724#0" />
+            <element signature="e#14765#15449#0" />
+            <element signature="e#15494#16496#0" />
+            <element signature="e#16534#17087#0" />
+            <element signature="e#16537#17221#0" />
+            <element signature="e#16540#17397#0" />
+            <element signature="e#17441#18298#0" />
+            <element signature="e#17441#21368#0" />
+            <element signature="e#21417#27249#0" />
+            <element signature="e#27296#31542#0" />
+            <element signature="e#31594#38005#0" />
+            <element signature="e#38101#39049#0" />
+            <element signature="e#39137#39962#0" />
+            <element signature="e#40008#40285#0" />
+            <element signature="e#40352#40678#0" />
+            <element signature="e#40708#41722#0" />
+            <element signature="e#41755#42382#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

@@ -22,13 +22,6 @@ import jamotools
 
 import Levenshtein as Lev
 
-import psutil
-
-logger = logging.getLogger('root')
-FORMAT = "[%(asctime)s %(filename)s:%(lineno)s - %(funcName)s()] %(message)s"
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG, format=FORMAT)
-logger.setLevel(logging.INFO)
-
 target_dict = dict()
 
 # Baseline Function
@@ -125,10 +118,10 @@ def get_spectrogram_feature(filepath):
 
 
 # Baseline Function
-def load_label(label_path):
+def load_label_local(label_path):
     char2index = dict() # [ch] = id
     index2char = dict() # [id] = ch
-    with open(label_path, 'r') as f:
+    with open(label_path, 'r', encoding="utf-8") as f:
         for no, line in enumerate(f):
             if line[0] == '#':
                 continue
@@ -499,6 +492,30 @@ class CTC_Decoder_General(nn.Module):
         return prediction_tensor
 
 
+class Mel2SeqNet_General(nn.Module):
+    def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
+        super(Mel2SeqNet_General, self).__init__()
+
+        self.encoder = Encoder_General(D_in, H, num_layers).to(device)
+        self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
+
+        # Initialize weights with random uniform numbers with range
+        for param in self.encoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.decoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+
+    def forward(self, input_tensor):
+        batch_size = input_tensor.shape[0]
+        # (B, T, F) -> (B, T, H)
+        encoded_tensor = self.encoder(input_tensor)
+        # (B, T, H) -> (B, T, 75)
+        pred_tensor = self.decoder(encoded_tensor)
+        pred_tensor = pred_tensor.permute(1, 0, 2)
+
+        return pred_tensor
+
+    
 class Residual_GRU(nn.Module):
     def __init__(self, in_D, out_D, bidirectional=False, batch_first=True):
         super(Residual_GRU, self).__init__()
@@ -552,7 +569,7 @@ class CTC_Decoder_General_Residual(nn.Module):
         # (B, T, H)
         for i, layer in enumerate(self.gru_layers):
             if i == 0:
-                output_tensor, _ = layer(output_tensor)
+                output_tensor, _ = layer(output_tensor) 
             else:
                 output_tensor = layer(output_tensor)
         # (B, T, H)
@@ -563,30 +580,7 @@ class CTC_Decoder_General_Residual(nn.Module):
         return prediction_tensor
 
 
-class Mel2SeqNet_General(nn.Module):
-    def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
-        super(Mel2SeqNet_General, self).__init__()
-
-        self.encoder = Encoder_General(D_in, H, num_layers).to(device)
-        self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
-
-        # Initialize weights with random uniform numbers with range
-        for param in self.encoder.parameters():
-            param.data.uniform_(-0.1, 0.1)
-        for param in self.decoder.parameters():
-            param.data.uniform_(-0.1, 0.1)
-
-    def forward(self, input_tensor):
-        batch_size = input_tensor.shape[0]
-        # (B, T, F) -> (B, T, H)
-        encoded_tensor = self.encoder(input_tensor)
-        # (B, T, H) -> (B, T, 75)
-        pred_tensor = self.decoder(encoded_tensor)
-        pred_tensor = pred_tensor.permute(1, 0, 2)
-
-        return pred_tensor
-
-
+    
 class Mel2SeqNet_General_Residual(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
         super(Mel2SeqNet_General_Residual, self).__init__()
@@ -609,7 +603,7 @@ class Mel2SeqNet_General_Residual(nn.Module):
         pred_tensor = pred_tensor.permute(1, 0, 2)
 
         return pred_tensor
-
+    
 
 class Threading_Batched_Preloader():
     def __init__(self, wav_path_list, ground_truth_list, korean_script_list, batch_size, num_mels, nsc_in_ms):
@@ -645,7 +639,7 @@ class Threading_Batched_Preloader():
         loading_sequence_len = len(loading_sequence)
 
         thread_size = int(np.ceil(loading_sequence_len / thread_num))
-        logger.info(thread_size)
+        print(thread_size)
         load_idxs_list = list()
         for i in range(thread_num):
             start_idx = i * thread_size
@@ -667,7 +661,7 @@ class Threading_Batched_Preloader():
 
         for thread in self.thread_list:
             thread.start()
-        logger.info('batch initialized')
+        print('batch initialized')
         return
 
     def check_thread_flags(self):
@@ -675,11 +669,11 @@ class Threading_Batched_Preloader():
             if flag is False:
                 return False
 
-        logger.info("All Threads Finished")
+        print("All Threads Finished")
 
         if self.queue.empty:
             self.end_flag = True
-            logger.info("Queue is Empty")
+            print("Queue is Empty")
             for thread in self.thread_list:
                 thread.join()
             return True
@@ -687,17 +681,15 @@ class Threading_Batched_Preloader():
         return False
 
     def get_batch(self):
-        # logger.info("Called get_batch ")
-        # logger.info(self.queue)
+        # print("Called get_batch ")
+        # print(self.queue)
         while not (self.check_thread_flags()):
-            #logger.info("wErwer")
-            # logger.info(psutil.virtual_memory())
-            # logger.info("Q Size Before: {}".format(self.queue.qsize()))
+            # print("Q Size Before: {}".format(self.queue.qsize()))
             batch = self.queue.get()
-            # logger.info("Q Size After: {}".format(self.queue.qsize()))
-            # logger.info(psutil.virtual_memory())
+            # print("Q Size After: {}".format(self.queue.qsize()))
+            # print(psutil.virtual_memory())
             if (batch != None):
-                #logger.info("Batch is Ready")
+                #print("Batch is Ready")
                 batched_tensor = batch[0]
                 batched_ground_truth = batch[1]
                 batched_loss_mask = batch[2]
@@ -707,10 +699,10 @@ class Threading_Batched_Preloader():
                 return batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list, korean_script_list
 
             else:
-                logger.info("Loader Queue is empty")
+                print("Loader Queue is empty")
                 #time.sleep(1)
 
-        logger.info('get_batch finish')
+        print('get_batch finish')
         return None
 
 
@@ -732,7 +724,7 @@ class Batching_Thread(threading.Thread):
         self.num_mels = num_mels
         self.nsc_in_ms = nsc_in_ms
 
-        logger.info("Batching Thread {} Initialized".format(self.id))
+        print("Batching Thread {} Initialized".format(self.id))
 
     def run(self):
 
@@ -744,7 +736,7 @@ class Batching_Thread(threading.Thread):
                     self.queue.put(batch, True, 4)
                     success = True
                 except:
-                    # logger.info("Batching Failed in Thread ID: {} Queue Size: {}".format(self.id, self.queue.qsize()))
+                    # print("Batching Failed in Thread ID: {} Queue Size: {}".format(self.id, self.queue.qsize()))
                     time.sleep(1)
 
         self.thread_flags[self.id] = True
@@ -821,7 +813,7 @@ class Batching_Thread(threading.Thread):
             # You do not need to know what loss mask is
             batched_loss_mask[order, :ground_truth_size_list[order]] = torch.ones(ground_truth_size_list[order])
 
-            # logger.info('{}, {}, {}, {}'.format(batched_tensor.shape, batched_ground_truth.shape, batched_loss_mask.shape, ground_truth_size_list.shape))
+            # print('{}, {}, {}, {}'.format(batched_tensor.shape, batched_ground_truth.shape, batched_loss_mask.shape, ground_truth_size_list.shape))
 
         return [batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list, korean_script_list]
 
@@ -839,13 +831,13 @@ class Batching_Thread(threading.Thread):
         y = sig.ravel()
         y = y / (2 ** 15)
 
-        # logger.info('Shape of y: {}'.format(y.shape))
+        # print('Shape of y: {}'.format(y.shape))
 
         # y, sr = librosa.core.load(wav_path, sr=fs)
 
         f, t, Zxx = sp.signal.stft(y, fs=fs, nperseg=nsc, noverlap=nov)
 
-        # logger.info('After STFT')
+        # print('After STFT')
 
         Sxx = np.abs(Zxx)
 
@@ -853,9 +845,9 @@ class Batching_Thread(threading.Thread):
         coef = np.sum(Sxx, 0)
         Sxx = Sxx[:, find_starting_point(coef):find_ending_point(coef)]
 
-        # logger.info('Before librosa')
+        # print('Before librosa')
         mel_filters = librosa.filters.mel(sr=fs, n_fft=nsc, n_mels=self.num_mels)
-        # logger.info('After librosa')
+        # print('After librosa')
 
         mel_specgram = np.matmul(mel_filters, Sxx)
 
@@ -911,7 +903,7 @@ class Threading_Batched_Preloader_v2():
         loading_sequence_len = len(loading_sequence)
 
         thread_size = int(np.ceil(loading_sequence_len / thread_num))
-        logger.info(thread_size)
+        print(thread_size)
         load_idxs_list = list()
         for i in range(thread_num):
             start_idx = i * thread_size
@@ -934,7 +926,7 @@ class Threading_Batched_Preloader_v2():
 
         for thread in self.thread_list:
             thread.start()
-        logger.info('batch initialized')
+        print('batch initialized')
         return
 
     def check_thread_flags(self):
@@ -942,11 +934,11 @@ class Threading_Batched_Preloader_v2():
             if flag is False:
                 return False
 
-        logger.info("All Threads Finished")
+        print("All Threads Finished")
 
         if self.queue.empty:
             self.end_flag = True
-            logger.info("Queue is Empty")
+            print("Queue is Empty")
             for thread in self.thread_list:
                 thread.join()
             return True
@@ -954,17 +946,17 @@ class Threading_Batched_Preloader_v2():
         return False
 
     def get_batch(self):
-        # logger.info("Called get_batch ")
-        # logger.info(self.queue)
+        # print("Called get_batch ")
+        # print(self.queue)
         while not (self.check_thread_flags()):
-            #logger.info("wErwer")
-            # logger.info(psutil.virtual_memory())
-            # logger.info("Q Size Before: {}".format(self.queue.qsize()))
+            #print("wErwer")
+            # print(psutil.virtual_memory())
+            # print("Q Size Before: {}".format(self.queue.qsize()))
             batch = self.queue.get()
-            # logger.info("Q Size After: {}".format(self.queue.qsize()))
-            # logger.info(psutil.virtual_memory())
+            # print("Q Size After: {}".format(self.queue.qsize()))
+            # print(psutil.virtual_memory())
             if (batch != None):
-                #logger.info("Batch is Ready")
+                #print("Batch is Ready")
                 batched_tensor = batch[0]
                 batched_ground_truth = batch[1]
                 batched_loss_mask = batch[2]
@@ -977,10 +969,10 @@ class Threading_Batched_Preloader_v2():
                 return batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list, batched_num_script, batched_num_script_loss_mask
 
             else:
-                logger.info("Loader Queue is empty")
+                print("Loader Queue is empty")
                 #time.sleep(1)
 
-        logger.info('get_batch finish')
+        print('get_batch finish')
         return None
 
 
@@ -1004,7 +996,7 @@ class Batching_Thread_v2(threading.Thread):
         self.nsc_in_ms = nsc_in_ms
         self.is_train = is_train
 
-        # logger.info("Batching Thread {} Initialized".format(self.id))
+        # print("Batching Thread {} Initialized".format(self.id))
 
     def run(self):
 
@@ -1016,7 +1008,7 @@ class Batching_Thread_v2(threading.Thread):
                     self.queue.put(batch, True, 4)
                     success = True
                 except:
-                    # logger.info("Batching Failed in Thread ID: {} Queue Size: {}".format(self.id, self.queue.qsize()))
+                    # print("Batching Failed in Thread ID: {} Queue Size: {}".format(self.id, self.queue.qsize()))
                     time.sleep(1)
 
         self.thread_flags[self.id] = True
@@ -1108,7 +1100,7 @@ class Batching_Thread_v2(threading.Thread):
             batched_num_script[order, :num_script_length_list[order]] = torch.tensor(num_script_list[order])
             batched_num_script_loss_mask[order, :num_script_length_list[order]] = torch.ones(num_script_length_list[order])
 
-            # logger.info('{}, {}, {}, {}'.format(batched_tensor.shape, batched_ground_truth.shape, batched_loss_mask.shape, ground_truth_size_list.shape))
+            # print('{}, {}, {}, {}'.format(batched_tensor.shape, batched_ground_truth.shape, batched_loss_mask.shape, ground_truth_size_list.shape))
 
         return [batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list, korean_script_list, batched_num_script, batched_num_script_loss_mask]
 
@@ -1151,7 +1143,7 @@ def train(net, optimizer, ctc_loss, input_tensor, ground_truth, target_lengths, 
 
     optimizer.zero_grad()
 
-    # logger.info("Right before entering the model")
+    # print("Right before entering the model")
 
     pred_tensor = net(input_tensor)
 
@@ -1336,6 +1328,42 @@ def get_korean_and_jamo_list_v2(korean_script_paths):
 
     for file in korean_script_paths:
         with open(file, 'r') as f:
+            line = f.read()
+            line = line.strip()
+            korean_script_list.append(line)
+            jamo = list(jamotools.split_syllables(line, 'JAMO'))
+
+            for i, c in enumerate(jamo):
+                if c not in pure_jamo_list:
+                    jamo[i] = '*'
+
+            jamo = ''.join(jamo)
+            jamo_script_list.append(jamo)
+
+    return korean_script_list, jamo_script_list
+
+
+def get_korean_and_jamo_list_v2_local(korean_script_paths):
+
+    korean_script_list = list()
+    jamo_script_list = list()
+
+    pure_jamo_list = list()
+
+    # 초성
+    for unicode in range(0x1100, 0x1113):
+        pure_jamo_list.append(chr(unicode))  # chr: Change hexadecimal to unicode
+    # 중성
+    for unicode in range(0x1161, 0x1176):
+        pure_jamo_list.append(chr(unicode))
+    # 종성
+    for unicode in range(0x11A8, 0x11C3):
+        pure_jamo_list.append(chr(unicode))
+
+    pure_jamo_list += [' ', '!', ',', '.', '?']
+
+    for file in korean_script_paths:
+        with open(file, 'r', encoding="utf-8") as f:
             line = f.read()
             line = line.strip()
             korean_script_list.append(line)
