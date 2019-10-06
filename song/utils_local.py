@@ -580,7 +580,6 @@ class CTC_Decoder_General_Residual(nn.Module):
         return prediction_tensor
 
 
-    
 class Mel2SeqNet_General_Residual(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
         super(Mel2SeqNet_General_Residual, self).__init__()
@@ -869,7 +868,7 @@ class Batching_Thread(threading.Thread):
 
 class Threading_Batched_Preloader_v2():
     def __init__(self, wav_path_list, ground_truth_list, num_script_list, korean_script_list, batch_size, num_mels, nsc_in_ms, is_train=True):
-        super(Threading_Batched_Preloader).__init__()
+        super(Threading_Batched_Preloader_v2).__init__()
         self.wav_path_list = wav_path_list
         self.total_num_input = len(wav_path_list)
         self.tensor_input_list = [None] * self.total_num_input
@@ -974,6 +973,264 @@ class Threading_Batched_Preloader_v2():
 
         print('get_batch finish')
         return None
+
+
+class Threading_Batched_Preloader_v2_local():
+    def __init__(self, wav_path_list, ground_truth_list, num_script_list, korean_script_list, batch_size, num_mels, nsc_in_ms, is_train=True):
+        super(Threading_Batched_Preloader_v2_local).__init__()
+        self.wav_path_list = wav_path_list
+        self.total_num_input = len(wav_path_list)
+        self.tensor_input_list = [None] * self.total_num_input
+        self.ground_truth_list = ground_truth_list
+        self.num_script_list = num_script_list
+        self.korean_script_list = korean_script_list
+        self.sentence_length_list = np.asarray(list(map(len, ground_truth_list)))
+        self.shuffle_step = 4
+        self.loading_sequence = None
+        self.end_flag = False
+        self.batch_size = batch_size
+        self.qsize = 16
+        self.queue = queue.Queue(self.qsize)
+        self.thread_flags = list()
+        self.num_mels = num_mels
+        self.nsc_in_ms = nsc_in_ms
+        self.is_train = is_train
+
+    # Shuffle loading index and set end flag to false
+    def initialize_batch(self, thread_num):
+        loading_sequence = np.argsort(self.sentence_length_list)
+        bundle = np.stack([self.sentence_length_list[loading_sequence], loading_sequence])
+
+        for seq_len in range(self.shuffle_step, np.max(self.sentence_length_list), self.shuffle_step):
+            idxs = np.where((bundle[0, :] > seq_len) & (bundle[0, :] <= seq_len + self.shuffle_step))[0]
+            idxs_origin = copy.deepcopy(idxs)
+            random.shuffle(idxs)
+            bundle[:, idxs_origin] = bundle[:, idxs]
+
+        loading_sequence = bundle[1, :]
+        loading_sequence_len = len(loading_sequence)
+
+        thread_size = int(np.ceil(loading_sequence_len / thread_num))
+        print(thread_size)
+        load_idxs_list = list()
+        for i in range(thread_num):
+            start_idx = i * thread_size
+            end_idx = (i + 1) * thread_size
+
+            if end_idx > loading_sequence_len:
+                end_idx = loading_sequence_len
+
+            load_idxs_list.append(loading_sequence[start_idx:end_idx])
+
+        self.end_flag = False
+
+        self.queue = queue.Queue(self.qsize)
+        self.thread_flags = [False] * thread_num
+
+        self.thread_list = [
+            Batching_Thread_v2_local(self.wav_path_list, self.ground_truth_list, self.num_script_list, self.korean_script_list, load_idxs_list[i],
+                               self.queue, self.batch_size, self.thread_flags, self.num_mels,
+                               self.nsc_in_ms, i, self.is_train) for i in range(thread_num)]
+
+        for thread in self.thread_list:
+            thread.start()
+        print('batch initialized')
+        return
+
+    def check_thread_flags(self):
+        for flag in self.thread_flags:
+            if flag is False:
+                return False
+
+        print("All Threads Finished")
+
+        if self.queue.empty:
+            self.end_flag = True
+            print("Queue is Empty")
+            for thread in self.thread_list:
+                thread.join()
+            return True
+
+        return False
+
+    def get_batch(self):
+
+        while not (self.check_thread_flags()):
+            batch = self.queue.get()
+            if (batch != None):
+                batched_tensor = batch[0]
+                batched_ground_truth = batch[1]
+                batched_loss_mask = batch[2]
+                ground_truth_size_list = batch[3]
+                korean_script_list = batch[4]
+                batched_num_script = batch[5]
+                batched_num_script_loss_mask = batch[6]
+
+                return batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list, batched_num_script, batched_num_script_loss_mask
+
+            else:
+                print("Loader Queue is empty")
+
+        print('get_batch finish')
+        return None
+
+
+class Batching_Thread_v2_local(threading.Thread):
+
+    def __init__(self, wav_path_list, ground_truth_list, num_script_list, korean_script_list, load_idxs_list, queue, batch_size, thread_flags, num_mels, nsc_in_ms, id, is_train=True):
+
+        threading.Thread.__init__(self)
+        self.wav_path_list = wav_path_list
+        self.ground_truth_list = ground_truth_list
+        self.korean_script_list = korean_script_list
+        self.num_script_list = num_script_list
+        self.load_idxs_list = load_idxs_list
+        self.list_len = len(load_idxs_list)
+        self.cur_idx = 0
+        self.id = id
+        self.queue = queue
+        self.batch_size = batch_size
+        self.thread_flags = thread_flags
+        self.num_mels = num_mels
+        self.nsc_in_ms = nsc_in_ms
+        self.is_train = is_train
+
+    def run(self):
+
+        while (self.cur_idx < self.list_len):
+            batch = self.batch()
+            success = False
+            while success == False:
+                try:
+                    self.queue.put(batch, True, 4)
+                    success = True
+                except:
+                    # print("Batching Failed in Thread ID: {} Queue Size: {}".format(self.id, self.queue.qsize()))
+                    time.sleep(1)
+
+        self.thread_flags[self.id] = True
+
+        return
+
+    def batch(self):
+
+        tensor_list = list()
+        ground_truth_list = list()
+        tensor_size_list = list()
+        ground_truth_size_list = list()
+        korean_script_list = list()
+
+        num_script_list = list()
+        num_script_length_list = list()
+
+        count = 0
+        max_seq_len = 0
+        max_sen_len = 0
+        max_num_script_len = 0
+
+        for i in range(self.batch_size):
+
+            # If there is no more file, break and set end_flag true
+            if self.cur_idx >= self.list_len:
+                break
+
+            wav_path = self.wav_path_list[self.load_idxs_list[self.cur_idx]]
+
+            tensor = self.create_mel(wav_path)
+            tensor_list.append(tensor)
+            tensor_size_list.append(tensor.shape[1])
+
+            ground_truth = self.ground_truth_list[self.load_idxs_list[self.cur_idx]]
+            ground_truth_list.append(ground_truth)
+            ground_truth_size_list.append(len(ground_truth))
+
+            num_script = self.num_script_list[self.load_idxs_list[self.cur_idx]]
+            num_script_list.append(num_script)
+            num_script_length_list.append(len(num_script))
+
+            if (tensor.shape[1] > max_seq_len):
+                max_seq_len = tensor.shape[1]
+            if (len(ground_truth) > max_sen_len):
+                max_sen_len = len(ground_truth)
+            if (len(num_script) > max_num_script_len):
+                max_num_script_len = len(num_script)
+
+            korean_script_list.append(self.korean_script_list[self.load_idxs_list[self.cur_idx]])
+
+            self.cur_idx += 1
+            count += 1
+
+        batched_tensor = torch.zeros(count, max_seq_len + 5, self.num_mels)
+        batched_ground_truth = torch.zeros(count, max_sen_len)
+        batched_loss_mask = torch.zeros(count, max_sen_len)
+        ground_truth_size_list = torch.tensor(np.asarray(ground_truth_size_list), dtype=torch.long)
+
+        batched_num_script = torch.zeros(count, max_num_script_len)
+        batched_num_script_loss_mask = torch.zeros(count, max_num_script_len)
+
+        for order in range(count):
+
+            target = tensor_list[order]
+
+            if self.is_train:
+                pad_random = np.random.randint(0, 5)
+                # Time shift, add zeros in front of an image
+                if pad_random > 0:
+                    offset = torch.zeros(target.shape[0], pad_random, target.shape[2], dtype=torch.float64)
+                    target = torch.cat((offset, target), 1)
+                # Add random noise
+                target = target + (torch.rand(target.shape, dtype=torch.float64) - 0.5) / 20
+                # Value less than 0 or more than 1 is clamped to 0 and 1
+                target = torch.clamp(target, min=0.0, max=1.0)
+                batched_tensor[order, :tensor_size_list[order] + pad_random, :] = target
+            else:
+                batched_tensor[order, :tensor_size_list[order], :] = target
+
+            # batched_tensor[order, :tensor_size_list[order], :] = target
+            batched_ground_truth[order, :ground_truth_size_list[order]] = torch.tensor(ground_truth_list[order])
+
+            # You do not need to know what loss mask is
+            batched_loss_mask[order, :ground_truth_size_list[order]] = torch.ones(ground_truth_size_list[order])
+
+            batched_num_script[order, :num_script_length_list[order]] = torch.tensor(num_script_list[order])
+            batched_num_script_loss_mask[order, :num_script_length_list[order]] = torch.ones(num_script_length_list[order])
+
+            # print('{}, {}, {}, {}'.format(batched_tensor.shape, batched_ground_truth.shape, batched_loss_mask.shape, ground_truth_size_list.shape))
+
+        return [batched_tensor, batched_ground_truth, batched_loss_mask, ground_truth_size_list, korean_script_list, batched_num_script, batched_num_script_loss_mask]
+
+    def create_mel(self, wav_path):
+        fs = 16000
+        frame_length_ms = self.nsc_in_ms
+        frame_shift_ms = frame_length_ms/2
+        nsc = int(fs * frame_length_ms / 1000)
+        nov = nsc - int(fs * frame_shift_ms / 1000)
+        eps = 1e-8
+        db_ref = 160
+
+        mel_path = wav_path.replace('train_data', 'mel_data').replace('.wav', '.npy')
+        if not os.path.isfile(mel_path):
+            (rate, width, sig) = wavio.readwav(wav_path)
+            y = sig.ravel()
+            y = y / (2 ** 15)
+            f, t, Zxx = sp.signal.stft(y, fs=fs, nperseg=nsc, noverlap=nov)
+            Sxx = np.abs(Zxx)
+            coef = np.sum(Sxx, 0)
+            Sxx = Sxx[:, find_starting_point(coef):find_ending_point(coef)]
+            mel_filters = librosa.filters.mel(sr=fs, n_fft=nsc, n_mels=self.num_mels)
+            mel_specgram = np.matmul(mel_filters, Sxx)
+            log_mel_specgram = 20 * np.log10(np.maximum(mel_specgram, eps))
+            norm_log_mel_specgram = (log_mel_specgram + db_ref) / db_ref
+
+            # (F, T) -> (T, F)
+            input_spectrogram = norm_log_mel_specgram.T
+            np.save(mel_path, input_spectrogram)
+            # (T, F) -> (1, T, F)
+        else:
+            input_spectrogram = np.load(mel_path)
+
+        tensor_input = torch.tensor(input_spectrogram).unsqueeze(0)
+        return tensor_input
 
 
 class Batching_Thread_v2(threading.Thread):
