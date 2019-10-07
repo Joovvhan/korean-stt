@@ -2,135 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="ca409ed8-7009-4390-af74-854acf8c17db" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/hackathon_submission/main_round_2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song/.ipynb_checkpoints/main_local_residual-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/song/.ipynb_checkpoints/main_local_residual-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song/main_local_residual.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/song/main_local_residual.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/song/utils_local.py" beforeDir="false" afterPath="$PROJECT_DIR$/song/utils_local.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
-  </component>
-  <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/hackathon_submission/main_round_1.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1588">
-              <caret line="221" column="4" selection-start-line="221" selection-start-column="4" selection-end-line="221" selection-end-column="4" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/hackathon_submission/utils.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="465">
-              <caret line="552" column="32" selection-start-line="552" selection-start-column="32" selection-end-line="552" selection-end-column="32" />
-              <folding>
-                <element signature="e#628#1118#0" />
-                <element signature="e#1154#1310#0" />
-                <element signature="e#1374#1813#0" />
-                <element signature="e#1844#2093#0" />
-                <element signature="e#2162#2462#0" />
-                <element signature="e#2528#3180#0" />
-                <element signature="e#3235#3699#0" />
-                <element signature="e#3740#4505#0" />
-                <element signature="e#4002#4174#0" />
-                <element signature="e#4551#5123#0" />
-                <element signature="e#5159#6007#0" />
-                <element signature="e#6057#6899#0" />
-                <element signature="e#6935#7732#0" />
-                <element signature="e#7784#8630#0" />
-                <element signature="e#8670#9730#0" />
-                <element signature="e#9769#10572#0" />
-                <element signature="e#10611#11417#0" />
-                <element signature="e#11453#12569#0" />
-                <element signature="e#12609#13879#0" />
-                <element signature="e#13918#14724#0" />
-                <element signature="e#14765#15449#0" />
-                <element signature="e#15494#16496#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/song/utils_local.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="367">
-              <caret line="1077" column="49" selection-start-line="1077" selection-start-column="49" selection-end-line="1077" selection-end-column="49" />
-              <folding>
-                <element signature="e#24#36#0" expanded="true" />
-                <element signature="e#394#884#0" />
-                <element signature="e#920#1076#0" />
-                <element signature="e#1140#1579#0" />
-                <element signature="e#1610#1859#0" />
-                <element signature="e#1928#2228#0" />
-                <element signature="e#2294#2946#0" />
-                <element signature="e#3007#3489#0" />
-                <element signature="e#3530#4295#0" />
-                <element signature="e#4341#4913#0" />
-                <element signature="e#4949#5797#0" />
-                <element signature="e#5847#6689#0" />
-                <element signature="e#6725#7522#0" />
-                <element signature="e#7574#8420#0" />
-                <element signature="e#8460#9520#0" />
-                <element signature="e#9559#10362#0" />
-                <element signature="e#10401#11207#0" />
-                <element signature="e#11243#12359#0" />
-                <element signature="e#12399#13669#0" />
-                <element signature="e#13708#14514#0" />
-                <element signature="e#14555#15239#0" />
-                <element signature="e#15284#16286#0" />
-                <element signature="e#16330#17187#0" />
-                <element signature="e#17229#17628#0" />
-                <element signature="e#17678#18356#0" />
-                <element signature="e#18410#19522#0" />
-                <element signature="e#19580#20464#0" />
-                <element signature="e#20512#24281#0" />
-                <element signature="e#24330#30120#0" />
-                <element signature="e#30167#34329#0" />
-                <element signature="e#34379#38541#0" />
-                <element signature="e#38218#44611#0" />
-                <element signature="e#38413#38979#0" />
-                <element signature="e#39070#39606#0" />
-                <element signature="e#39638#43442#0" />
-                <element signature="e#34381#40774#0" />
-                <element signature="e#40870#41812#0" />
-                <element signature="e#41900#42725#0" />
-                <element signature="e#42771#43048#0" />
-                <element signature="e#43115#43441#0" />
-                <element signature="e#43471#44485#0" />
-                <element signature="e#44518#45145#0" />
-                <element signature="e#45181#45893#0" />
-                <element signature="e#45952#46461#0" />
-                <element signature="e#46523#47469#0" />
-                <element signature="e#47537#48501#0" />
-                <element signature="e#48566#48865#0" />
-                <element signature="e#48919#49602#0" />
-                <element signature="e#49652#50044#0" />
-                <element signature="e#50087#50433#0" />
-                <element signature="e#50487#50944#0" />
-                <element signature="e#51001#51585#0" />
-                <element signature="e#51645#51862#0" />
-                <element signature="e#51898#52054#0" />
-                <element signature="e#52105#52316#0" />
-                <element signature="e#52376#52661#0" />
-                <element signature="e#52720#53027#0" />
-                <element signature="e#53220#53664#0" />
-                <element signature="e#53704#55358#0" />
-                <element signature="e#55394#62865#0" />
-                <element signature="e#62904#70042#0" />
-                <element signature="e#70086#70977#0" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-    </leaf>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -148,51 +28,15 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/hackathon_submission/utils.py" />
-        <option value="$PROJECT_DIR$/song/utils_local.py" />
-      </list>
-    </option>
-  </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="728" />
-    <option name="width" value="1199" />
-    <option name="height" value="1047" />
-  </component>
   <component name="ProjectId" id="1RDlAkzi31VkPWze4zkDGQG6h1f" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
-  <component name="ProjectView">
-    <navigator proportions="" version="1">
-      <foldersAlwaysOnTop value="true" />
-    </navigator>
-    <panes>
-      <pane id="Scope" />
-      <pane id="ProjectPane">
-        <subPane>
-          <expand>
-            <path>
-              <item name="korean-stt" type="b2602c69:ProjectViewProjectNode" />
-              <item name="korean-stt" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="korean-stt" type="b2602c69:ProjectViewProjectNode" />
-              <item name="korean-stt" type="462c0819:PsiDirectoryNode" />
-              <item name="song" type="462c0819:PsiDirectoryNode" />
-            </path>
-          </expand>
-          <select />
-        </subPane>
-      </pane>
-    </panes>
-  </component>
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/hackathon_submission" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/hackathon_submission" />
       <recent name="$PROJECT_DIR$/hackaton_submission" />
     </key>
   </component>
@@ -221,41 +65,12 @@
     </task>
     <servers />
   </component>
-  <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
-    <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.09641728" />
-      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
-      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" />
-      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
-      <window_info anchor="bottom" id="Python Console" order="10" />
-      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
-      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
-      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-    </layout>
-  </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
             <State>
-              <option name="RECENTLY_FILTERED_USER_GROUPS">
-                <collection />
-              </option>
-              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
-                <collection />
-              </option>
               <option name="COLUMN_ORDER" />
             </State>
           </value>
@@ -276,119 +91,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/song/main_local.ipynb">
-      <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/song/utils_local.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="1077" column="49" selection-start-line="1077" selection-start-column="49" selection-end-line="1077" selection-end-column="49" />
-          <folding>
-            <element signature="e#24#36#0" expanded="true" />
-            <element signature="e#394#884#0" />
-            <element signature="e#920#1076#0" />
-            <element signature="e#1140#1579#0" />
-            <element signature="e#1610#1859#0" />
-            <element signature="e#1928#2228#0" />
-            <element signature="e#2294#2946#0" />
-            <element signature="e#3007#3489#0" />
-            <element signature="e#3530#4295#0" />
-            <element signature="e#4341#4913#0" />
-            <element signature="e#4949#5797#0" />
-            <element signature="e#5847#6689#0" />
-            <element signature="e#6725#7522#0" />
-            <element signature="e#7574#8420#0" />
-            <element signature="e#8460#9520#0" />
-            <element signature="e#9559#10362#0" />
-            <element signature="e#10401#11207#0" />
-            <element signature="e#11243#12359#0" />
-            <element signature="e#12399#13669#0" />
-            <element signature="e#13708#14514#0" />
-            <element signature="e#14555#15239#0" />
-            <element signature="e#15284#16286#0" />
-            <element signature="e#16330#17187#0" />
-            <element signature="e#17229#17628#0" />
-            <element signature="e#17678#18356#0" />
-            <element signature="e#18410#19522#0" />
-            <element signature="e#19580#20464#0" />
-            <element signature="e#20512#24281#0" />
-            <element signature="e#24330#30120#0" />
-            <element signature="e#30167#34329#0" />
-            <element signature="e#34379#38541#0" />
-            <element signature="e#38218#44611#0" />
-            <element signature="e#38413#38979#0" />
-            <element signature="e#39070#39606#0" />
-            <element signature="e#39638#43442#0" />
-            <element signature="e#34381#40774#0" />
-            <element signature="e#40870#41812#0" />
-            <element signature="e#41900#42725#0" />
-            <element signature="e#42771#43048#0" />
-            <element signature="e#43115#43441#0" />
-            <element signature="e#43471#44485#0" />
-            <element signature="e#44518#45145#0" />
-            <element signature="e#45181#45893#0" />
-            <element signature="e#45952#46461#0" />
-            <element signature="e#46523#47469#0" />
-            <element signature="e#47537#48501#0" />
-            <element signature="e#48566#48865#0" />
-            <element signature="e#48919#49602#0" />
-            <element signature="e#49652#50044#0" />
-            <element signature="e#50087#50433#0" />
-            <element signature="e#50487#50944#0" />
-            <element signature="e#51001#51585#0" />
-            <element signature="e#51645#51862#0" />
-            <element signature="e#51898#52054#0" />
-            <element signature="e#52105#52316#0" />
-            <element signature="e#52376#52661#0" />
-            <element signature="e#52720#53027#0" />
-            <element signature="e#53220#53664#0" />
-            <element signature="e#53704#55358#0" />
-            <element signature="e#55394#62865#0" />
-            <element signature="e#62904#70042#0" />
-            <element signature="e#70086#70977#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hackathon_submission/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="552" column="32" selection-start-line="552" selection-start-column="32" selection-end-line="552" selection-end-column="32" />
-          <folding>
-            <element signature="e#628#1118#0" />
-            <element signature="e#1154#1310#0" />
-            <element signature="e#1374#1813#0" />
-            <element signature="e#1844#2093#0" />
-            <element signature="e#2162#2462#0" />
-            <element signature="e#2528#3180#0" />
-            <element signature="e#3235#3699#0" />
-            <element signature="e#3740#4505#0" />
-            <element signature="e#4002#4174#0" />
-            <element signature="e#4551#5123#0" />
-            <element signature="e#5159#6007#0" />
-            <element signature="e#6057#6899#0" />
-            <element signature="e#6935#7732#0" />
-            <element signature="e#7784#8630#0" />
-            <element signature="e#8670#9730#0" />
-            <element signature="e#9769#10572#0" />
-            <element signature="e#10611#11417#0" />
-            <element signature="e#11453#12569#0" />
-            <element signature="e#12609#13879#0" />
-            <element signature="e#13918#14724#0" />
-            <element signature="e#14765#15449#0" />
-            <element signature="e#15494#16496#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/hackathon_submission/main_round_1.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1588">
-          <caret line="221" column="4" selection-start-line="221" selection-start-column="4" selection-end-line="221" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
   </component>
 </project>
