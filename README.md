@@ -7,7 +7,7 @@ PyTorch implementation of Korean speech-to-text.
 1. [A Comparison of Sequence-to-Sequence Models for Speech Recognition](https://ai.google/research/pubs/pub46169)
 2. **[Deep Speech: Scaling up end-to-end speech recognition](https://arxiv.org/abs/1412.5567)** [v]
 3. [Attention-Based Models for Speech Recognition](https://arxiv.org/abs/1506.07503)
-4. **[State-of-the-art Speech Recognition With Sequence-to-Sequence Models](https://arxiv.org/pdf/1712.01769)** [v]
+4. **[State-of-the-art Speech Recognition With Sequence-to-Sequence Models](https://arxiv.org/abs/1712.01769)** [v]
 
 ## Clova Recommendations
 1. **[Listen, Attend and Spell](https://arxiv.org/abs/1508.01211)** [v]
