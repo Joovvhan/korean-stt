@@ -158,8 +158,7 @@ def main():
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     device = torch.device('cuda' if args.cuda else 'cpu')
 
-	#net = Mel2SeqNet_General_Residual
-    net = Mel2SeqNet_General(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), args.num_layers, device)
+    net = Mel2SeqNet_General_Residual(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), args.num_layers, device)
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr_1)
     ctc_loss = nn.CTCLoss().to(device)
 
@@ -176,7 +175,7 @@ def main():
         return
 
     if args.load != None:
-        nsml.load(checkpoint='best', session='team47/sr-hack-2019-50000/' + args.load)
+        nsml.load(checkpoint='model', session='team47/sr-hack-2019-50000/' + args.load)
         nsml.save('saved')
 
     for g in net_optimizer.param_groups:
@@ -228,12 +227,13 @@ def main():
                                                      script_path_list_train, korean_script_list_train, batch_size,
                                                      num_mels, args.nsc_in_ms, is_train=True)
 
-    preloader_eval = Threading_Batched_Preloader_v2(wav_path_list_eval, ground_truth_list_eval, script_path_list_eval,
-                                                    korean_script_list_eval, batch_size, num_mels, args.nsc_in_ms,
-                                                    is_train=False)
+    # preloader_eval = Threading_Batched_Preloader_v2(wav_path_list_eval, ground_truth_list_eval, script_path_list_eval,
+    #                                                 korean_script_list_eval, batch_size, num_mels, args.nsc_in_ms,
+    #                                                 is_train=False)
 
     best_loss = 1e10
-    best_eval_cer = 1e10
+    best_train_cer = 1e10
+    # best_eval_cer = 1e10
 
     # load all target scripts for reducing disk i/o
     target_path = os.path.join(DATASET_PATH, 'train_label')
@@ -328,93 +328,93 @@ def main():
         logger.info("Total Train CER: {}".format(train_cer))
         logger.info("Total Train Reference CER: {}".format(train_cer_ref))
 
-        preloader_eval.initialize_batch(num_thread)
-        loss_list_eval = list()
-        seq2seq_loss_list_eval = list()
-        seq2seq_loss_list_eval_ref = list()
-
-        logger.info("Initialized Evaluation Preloader")
-
-        count = 0
-        total_dist = 0
-        total_length = 1
-        total_dist_ref = 0
-        total_length_ref = 1
-
-        net.eval()
-        net_B.eval()
-
-        while not preloader_eval.end_flag:
-            batch = preloader_eval.get_batch()
-            if batch is not None:
-                tensor_input, ground_truth, loss_mask, length_list, batched_num_script, batched_num_script_loss_mask = batch
-                pred_tensor, loss = evaluate(net, ctc_loss, tensor_input.to(device), ground_truth.to(device),
-                                             length_list.to(device), device)
-                loss_list_eval.append(loss)
-
-                jamo_result = Decode_Prediction_No_Filtering(pred_tensor, tokenizer)
-
-                true_string_list = Decode_Num_Script(batched_num_script.detach().cpu().numpy(), index2char)
-
-                lev_input_ref = ground_truth
-                lev_pred_ref, attentions_ref, seq2seq_loss_ref = net_B.net_eval(lev_input_ref.to(device),
-                                                                                batched_num_script.to(device),
-                                                                                batched_num_script_loss_mask.to(device),
-                                                                                net_B_criterion)
-
-                pred_string_list_ref = Decode_Lev_Prediction(lev_pred_ref, index2char)
-                seq2seq_loss_list_train_ref.append(seq2seq_loss_ref)
-                dist_ref, length_ref = char_distance_list(true_string_list, pred_string_list_ref)
-
-                pred_string_list = [None]
-
-                dist = 0
-                length = 0
-
-                if (loss < args.loss_lim):
-                    lev_input = Decode_CTC_Prediction_And_Batch(pred_tensor)
-                    lev_pred, attentions, seq2seq_loss = net_B.net_eval(lev_input.to(device),
-                                                                        batched_num_script.to(device),
-                                                                        batched_num_script_loss_mask.to(device),
-                                                                        net_B_criterion)
-                    pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
-                    seq2seq_loss_list_train.append(seq2seq_loss)
-                    dist, length = char_distance_list(true_string_list, pred_string_list)
-
-                total_dist_ref += dist_ref
-                total_length_ref += length_ref
-
-                total_dist += dist
-                total_length += length
-
-                count += 1
-
-                if count % 10 == 0:
-                    logger.info("Eval: Count {} | {} => {}".format(count, true_string_list[0], pred_string_list_ref[0]))
-
-                    logger.info("Eval: Count {} | {} => {} => {}".format(count, true_string_list[0], jamo_result[0],
-                                                                         pred_string_list[0]))
-
-            else:
-                logger.info("Training Batch is None")
-
-        eval_cer = total_dist / total_length
-        eval_cer_ref = total_dist_ref / total_length_ref
-        eval_loss = np.mean(np.asarray(loss_list_eval))
-
-        logger.info("Mean Evaluation Loss: {}".format(eval_loss))
-        logger.info("Total Evaluation CER: {}".format(eval_cer))
-        logger.info("Total Evaluation Reference CER: {}".format(eval_cer_ref))
+        # preloader_eval.initialize_batch(num_thread)
+        # loss_list_eval = list()
+        # seq2seq_loss_list_eval = list()
+        # seq2seq_loss_list_eval_ref = list()
+        #
+        # logger.info("Initialized Evaluation Preloader")
+        #
+        # count = 0
+        # total_dist = 0
+        # total_length = 1
+        # total_dist_ref = 0
+        # total_length_ref = 1
+        #
+        # net.eval()
+        # net_B.eval()
+        #
+        # while not preloader_eval.end_flag:
+        #     batch = preloader_eval.get_batch()
+        #     if batch is not None:
+        #         tensor_input, ground_truth, loss_mask, length_list, batched_num_script, batched_num_script_loss_mask = batch
+        #         pred_tensor, loss = evaluate(net, ctc_loss, tensor_input.to(device), ground_truth.to(device),
+        #                                      length_list.to(device), device)
+        #         loss_list_eval.append(loss)
+        #
+        #         jamo_result = Decode_Prediction_No_Filtering(pred_tensor, tokenizer)
+        #
+        #         true_string_list = Decode_Num_Script(batched_num_script.detach().cpu().numpy(), index2char)
+        #
+        #         lev_input_ref = ground_truth
+        #         lev_pred_ref, attentions_ref, seq2seq_loss_ref = net_B.net_eval(lev_input_ref.to(device),
+        #                                                                         batched_num_script.to(device),
+        #                                                                         batched_num_script_loss_mask.to(device),
+        #                                                                         net_B_criterion)
+        #
+        #         pred_string_list_ref = Decode_Lev_Prediction(lev_pred_ref, index2char)
+        #         seq2seq_loss_list_train_ref.append(seq2seq_loss_ref)
+        #         dist_ref, length_ref = char_distance_list(true_string_list, pred_string_list_ref)
+        #
+        #         pred_string_list = [None]
+        #
+        #         dist = 0
+        #         length = 0
+        #
+        #         if (loss < args.loss_lim):
+        #             lev_input = Decode_CTC_Prediction_And_Batch(pred_tensor)
+        #             lev_pred, attentions, seq2seq_loss = net_B.net_eval(lev_input.to(device),
+        #                                                                 batched_num_script.to(device),
+        #                                                                 batched_num_script_loss_mask.to(device),
+        #                                                                 net_B_criterion)
+        #             pred_string_list = Decode_Lev_Prediction(lev_pred, index2char)
+        #             seq2seq_loss_list_train.append(seq2seq_loss)
+        #             dist, length = char_distance_list(true_string_list, pred_string_list)
+        #
+        #         total_dist_ref += dist_ref
+        #         total_length_ref += length_ref
+        #
+        #         total_dist += dist
+        #         total_length += length
+        #
+        #         count += 1
+        #
+        #         if count % 10 == 0:
+        #             logger.info("Eval: Count {} | {} => {}".format(count, true_string_list[0], pred_string_list_ref[0]))
+        #
+        #             logger.info("Eval: Count {} | {} => {} => {}".format(count, true_string_list[0], jamo_result[0],
+        #                                                                  pred_string_list[0]))
+        #
+        #     else:
+        #         logger.info("Training Batch is None")
+        #
+        # eval_cer = total_dist / total_length
+        # eval_cer_ref = total_dist_ref / total_length_ref
+        # eval_loss = np.mean(np.asarray(loss_list_eval))
+        #
+        # logger.info("Mean Evaluation Loss: {}".format(eval_loss))
+        # logger.info("Total Evaluation CER: {}".format(eval_cer))
+        # logger.info("Total Evaluation Reference CER: {}".format(eval_cer_ref))
 
         nsml.report(False, step=epoch, train_epoch__loss=train_loss, train_epoch__cer=train_cer,
-                    train_epoch__cer_ref=train_cer_ref,
-                    eval__loss=eval_loss, eval__cer=eval_cer, eval__cer_ref=eval_cer_ref)
+                    train_epoch__cer_ref=train_cer_ref)
+                    # , eval__loss=eval_loss, eval__cer=eval_cer, eval__cer_ref=eval_cer_ref)
 
         nsml.save(args.save_name)
-        best_model = (eval_cer < best_eval_cer)
+        best_model = (train_cer < best_train_cer)
         if best_model:
             nsml.save('best')
-            best_eval_cer = eval_cer
+            best_train_cer = train_cer
 
 if __name__ == "__main__":
     main()

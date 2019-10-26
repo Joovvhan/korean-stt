@@ -158,7 +158,6 @@ def main():
     args.cuda = not args.no_cuda and torch.cuda.is_available()
     device = torch.device('cuda' if args.cuda else 'cpu')
 
-	#net = Mel2SeqNet_General_Residual
     net = Mel2SeqNet_General(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), args.num_layers, device)
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr_1)
     ctc_loss = nn.CTCLoss().to(device)
@@ -176,7 +175,7 @@ def main():
         return
 
     if args.load != None:
-        nsml.load(checkpoint='best', session='team47/sr-hack-2019-50000/' + args.load)
+        nsml.load(checkpoint='model', session='team47/sr-hack-2019-50000/' + args.load)
         nsml.save('saved')
 
     for g in net_optimizer.param_groups:

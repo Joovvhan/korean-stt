@@ -33,7 +33,7 @@ from datetime import datetime
 import scipy as sp
 import numpy as np
 
-from utils import *
+from utilsLSTM import *
 
 import nsml
 from nsml import GPU_NUM, DATASET_PATH, DATASET_NAME, HAS_DATASET
@@ -159,11 +159,11 @@ def main():
     device = torch.device('cuda' if args.cuda else 'cpu')
 
 	#net = Mel2SeqNet_General_Residual
-    net = Mel2SeqNet_General(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), args.num_layers, device)
+    net = Mel2SeqNet_LSTM(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), args.num_layers, device)
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr_1)
     ctc_loss = nn.CTCLoss().to(device)
 
-    net_B = Seq2SeqNet_v2(args.num_hidden_seq, jamo_tokens, char2index, device)
+    net_B = Seq2SeqNet_LSTM(args.num_hidden_seq, jamo_tokens, char2index, device)
     net_B_optimizer = optim.Adam(net_B.parameters(), lr=args.lr_2)
     net_B_criterion = nn.NLLLoss(reduction='none').to(device)
 

@@ -153,6 +153,30 @@ class CTC_Decoder(nn.Module):
 
         return prediction_tensor
 
+class CTC_Decoder_LSTM(nn.Module):
+    def __init__(self, H, C, D_out, num_chars):
+        super(CTC_Decoder, self).__init__()
+        self.fc_embed = nn.Linear(H, H)
+        self.relu_embed = torch.nn.ReLU()
+        self.dropout_embed = nn.Dropout(p=0.5)
+        self.LSTM = nn.LSTM(H, (D_out, C), batch_first=True)
+        self.fc = nn.Linear(D_out, num_chars)
+        self.log_softmax = nn.LogSoftmax(dim=2)
+
+    def forward(self, input_tensor):
+        # (B, T, 2 * H/2)
+        output_tensor = self.fc_embed(input_tensor)
+        output_tensor = self.relu_embed(output_tensor)
+        output_tensor = self.dropout_embed(output_tensor)
+        # (B, T, H)
+        output_tensor, _ = self.LSTM(input_tensor)
+        # (B, T, H)
+        output_tensor = self.fc(output_tensor)
+        # (B, T, 75)
+        prediction_tensor = self.log_softmax(output_tensor)
+
+        return prediction_tensor
+
 
 class Mel2SeqNet(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, device):
@@ -384,14 +408,15 @@ class Encoder_General(nn.Module):
 
         return output_tensor
 
+
 class Encoder_LSTM(nn.Module):
     def __init__(self, D_in, H, num_layers):
-        super(Encoder_General, self).__init__()
+        super(Encoder_LSTM, self).__init__()
         self.fc = torch.nn.Linear(D_in, H)
         self.relu = torch.nn.ReLU()
         self.dropout = nn.Dropout(p=0.2)
 
-        self.gru_layers = nn.ModuleList([nn.LSTM(H, int(H / 2), bidirectional=True, batch_first=True) for i in range(num_layers)])
+        self.lstm_layers = nn.ModuleList([nn.LSTM(H, int(H / 2), bidirectional=True, batch_first=True) for i in range(num_layers)])
 
     def forward(self, input_tensor):
         # (B, T, F)
@@ -399,8 +424,8 @@ class Encoder_LSTM(nn.Module):
         output_tensor = self.relu(output_tensor)
         output_tensor = self.dropout(output_tensor)
         # (B, T, H)
-        for layer in self.gru_layers:
-            output_tensor, _ = layer(output_tensor)
+        for layer in self.lstm_layers:
+            output_tensor, (h, c) = layer(output_tensor)
 
         return output_tensor
 
@@ -424,6 +449,34 @@ class CTC_Decoder_General(nn.Module):
         output_tensor = self.dropout_embed(output_tensor)
         # (B, T, H)
         for layer in self.gru_layers:
+            output_tensor, _ = layer(output_tensor)
+        # (B, T, H)
+        output_tensor = self.fc(output_tensor)
+        # (B, T, 75)
+        prediction_tensor = self.log_softmax(output_tensor)
+
+        return prediction_tensor
+
+
+class CTC_Decoder_LSTM(nn.Module):
+    def __init__(self, H, D_out, num_chars, num_layers):
+        super(CTC_Decoder_LSTM, self).__init__()
+        self.fc_embed = nn.Linear(H, H)
+        self.relu_embed = torch.nn.ReLU()
+        self.dropout_embed = nn.Dropout(p=0.2)
+
+        self.lstm_layers = nn.ModuleList([nn.LSTM(H, D_out, batch_first=True)] + [nn.LSTM(D_out, D_out, batch_first=True) for i in range(num_layers - 1)])
+
+        self.fc = nn.Linear(D_out, num_chars)
+        self.log_softmax = nn.LogSoftmax(dim=2)
+
+    def forward(self, input_tensor):
+        # (B, T, 2 * H/2)
+        output_tensor = self.fc_embed(input_tensor)
+        output_tensor = self.relu_embed(output_tensor)
+        output_tensor = self.dropout_embed(output_tensor)
+        # (B, T, H)
+        for layer in self.lstm_layers:
             output_tensor, _ = layer(output_tensor)
         # (B, T, H)
         output_tensor = self.fc(output_tensor)
@@ -496,35 +549,12 @@ class CTC_Decoder_General_Residual(nn.Module):
 
         return prediction_tensor
 
-class Mel2SeqNet_General(nn.Module):
-    def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
-        super(Mel2SeqNet_General, self).__init__()
-
-        self.encoder = Encoder_General(D_in, H, num_layers).to(device)
-        self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
-
-        # Initialize weights with random uniform numbers with range
-        for param in self.encoder.parameters():
-            param.data.uniform_(-0.1, 0.1)
-        for param in self.decoder.parameters():
-            param.data.uniform_(-0.1, 0.1)
-
-    def forward(self, input_tensor):
-        batch_size = input_tensor.shape[0]
-        # (B, T, F) -> (B, T, H)
-        encoded_tensor = self.encoder(input_tensor)
-        # (B, T, H) -> (B, T, 75)
-        pred_tensor = self.decoder(encoded_tensor)
-        pred_tensor = pred_tensor.permute(1, 0, 2)
-
-        return pred_tensor
 
 class Mel2SeqNet_LSTM(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
-        super(Mel2SeqNet_General, self).__init__()
-
+        super(Mel2SeqNet_LSTM, self).__init__()
         self.encoder = Encoder_LSTM(D_in, H, num_layers).to(device)
-        self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
+        self.decoder = CTC_Decoder_LSTM(H, D_out, num_chars, num_layers).to(device)
 
         # Initialize weights with random uniform numbers with range
         for param in self.encoder.parameters():
@@ -1306,6 +1336,62 @@ def get_korean_and_jamo_list_v2(korean_script_paths):
 
     return korean_script_list, jamo_script_list
 
+def get_korean_and_jamo_list_v3(korean_script_paths):
+
+    korean_script_list = list()
+    jamo_script_list = list()
+
+    pure_jamo_list = list()
+
+    # 초성
+    for unicode in range(0x1100, 0x1113):
+        pure_jamo_list.append(chr(unicode))  # chr: Change hexadecimal to unicode
+    # 중성
+    for unicode in range(0x1161, 0x1176):
+        pure_jamo_list.append(chr(unicode))
+    # 종성
+    for unicode in range(0x11A8, 0x11C3):
+        pure_jamo_list.append(chr(unicode))
+
+    pure_jamo_list += [' ', '!', ',', '.', '?']
+
+    modified_script_dict = dict()
+
+    with open('modified_script.csv', "r") as f:
+        for i in range(50000):
+            line = f.readline().strip().split(',')
+            modified_script_dict[line[0].replace('.wav', '')] = line[2]
+
+    no_found_count = 0
+
+    for i, file in enumerate(korean_script_paths):
+        with open(file, 'r') as f:
+            line = f.read()
+            line = line.strip()
+
+            try:
+                shortened_file = file.split('/')[-1].replace('.script', '')
+                if len(modified_script_dict[shortened_file]) > 3:
+                    print('Replaced {} with {}'.format(line, modified_script_dict[shortened_file]))
+                    line = modified_script_dict[shortened_file]
+            except:
+                print('{} not in dictionary'.format(shortened_file))
+                no_found_count += 1
+
+            korean_script_list.append(line)
+            jamo = list(jamotools.split_syllables(line, 'JAMO'))
+
+            for i, c in enumerate(jamo):
+                if c not in pure_jamo_list:
+                    jamo[i] = '*'
+
+            jamo = ''.join(jamo)
+            jamo_script_list.append(jamo)
+
+    print('Could not found {} files in the dictionary'.format(no_found_count))
+
+    return korean_script_list, jamo_script_list
+
 
 def get_script_list(script_paths, SOS_token, EOS_token):
 
@@ -1484,11 +1570,11 @@ class EncoderRNN(nn.Module):
     def __init__(self, hidden_size):
         super(EncoderRNN, self).__init__()
         self.hidden_size = hidden_size
-        self.gru = nn.GRU(hidden_size, int(hidden_size / 2), bidirectional=True)
+        self.lstm = nn.LSTM(hidden_size, int(hidden_size / 2), bidirectional=True)
 
-    def forward(self, input, hidden):
-        output, hidden = self.gru(input, hidden)
-        return output, hidden
+    def forward(self, input, hidden, c):
+        output, (hidden, c) = self.lstm(input, (hidden, c))
+        return output, (hidden, c)
 
     def initHidden(self, batch_size, device):
         return torch.zeros(2, batch_size, int(self.hidden_size / 2), device=device)
@@ -1504,15 +1590,15 @@ class AttnDecoderRNN(nn.Module):
         self.attn = nn.Linear(self.hidden_size * 2, self.hidden_size)
         self.attn_combine = nn.Linear(self.hidden_size * 2, self.hidden_size)
         self.dropout = nn.Dropout(self.dropout_p)
-        self.gru = nn.GRU(self.hidden_size, self.hidden_size)
+        self.lstm = nn.LSTM(self.hidden_size, self.hidden_size)
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
-    def forward(self, embedded, hidden, encoder_outputs):
+    def forward(self, embedded, hidden, c, encoder_outputs):
         embedded = self.dropout(embedded)
 
         # (1, B, H) + (1, B, H) = (1, B, 2H)
         concated_tensor = torch.cat((embedded, hidden), 2)
-
+	
         key = self.attn(concated_tensor)  # (1, B, H)
         key = key.permute(1, 2, 0)  # (B, H, 1)
 
@@ -1526,10 +1612,10 @@ class AttnDecoderRNN(nn.Module):
         output = torch.cat((embedded, attn_applied), 2)  # (1, B, 2H)
         output = self.attn_combine(output)  # (1, B, H)
         output = F.relu(output)
-        output, hidden = self.gru(output, hidden)  # (1, B, H)
+        output, (hidden, c) = self.lstm(output, (hidden, c))  # (1, B, H)
         output = F.log_softmax(self.out(output), dim=2)  # (1, B, 74)
 
-        return output.squeeze(0), hidden, attn_weights.squeeze(1)
+        return output.squeeze(0), hidden, c, attn_weights.squeeze(1)
 
     def initHidden(self, device):
         return torch.zeros(1, 1, self.hidden_size, device=device)
@@ -1593,8 +1679,9 @@ class Seq2SeqNet(nn.Module):
         encoder_outputs = encoder_outputs.permute(1, 0, 2)
 
         # Override encoder_hidden
-        decoder_hidden = encoder_hidden
-
+        decoder_hidden = encoder_hidden.reshape(encoder_hidden.size())
+        logger.info("decoder hidden")
+        logger.info(decoder_hidden.size())
         decoder_attentions = torch.zeros([batch_size, input_length, target_length])
         decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
 
@@ -1732,6 +1819,256 @@ class Seq2SeqNet(nn.Module):
         return decoder_outputs
 
 
+class Seq2SeqNet_LSTM(nn.Module):
+    def __init__(self, hidden_size, jamo_tokens, char2index, device):
+        super(Seq2SeqNet_LSTM, self).__init__()
+
+        self.hidden_size = hidden_size
+        self.device = device
+        self.jamo_tokens = jamo_tokens
+        self.char2index = char2index
+
+        self.embedding_layer = nn.Embedding(len(jamo_tokens), hidden_size).to(device)
+        self.embedding_layer_2 = nn.Embedding(len(char2index), hidden_size).to(device)
+        self.encoder = EncoderRNN(hidden_size).to(device)
+        self.decoder = AttnDecoderRNN(hidden_size, len(char2index), dropout_p=0.1).to(device)
+
+        for param in self.encoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.embedding_layer.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.embedding_layer_2.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.decoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+
+    def net_train(self, input_tensor, target_tensor, loss_mask, optimizer, criterion):
+
+        optimizer.zero_grad()
+
+        batch_size = input_tensor.shape[0]
+        input_length = input_tensor.shape[1]
+        target_length = target_tensor.shape[1]
+
+        input_tensor = input_tensor.long()
+        target_tensor = target_tensor.long()
+
+        embedded_tensor = self.embedding_layer(input_tensor)
+        embedded_tensor = embedded_tensor.permute(1, 0, 2)
+
+        # (L, B)
+        target_tensor = target_tensor.permute(1, 0)
+        encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
+
+        encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+        encoder_c = self.encoder.initHidden(batch_size, self.device)
+        for ei in range(input_length):
+            embedded_slice = embedded_tensor[ei].unsqueeze(0)
+            encoder_output, (encoder_hidden, encoder_c) = self.encoder(
+                embedded_slice, encoder_hidden, encoder_c)
+            encoder_outputs[ei] = encoder_output
+
+        decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
+
+
+        # (L, B, H) -> (B, L, H)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
+
+        # Override encoder_hidden
+        decoder_hidden = encoder_hidden
+        decoder_c = encoder_c
+
+
+        decoder_attentions = torch.zeros([batch_size, input_length, target_length])
+        decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
+
+        loss = 0
+
+        for di in range(target_length):
+            decoder_input = self.embedding_layer_2(decoder_input_token)
+            decoder_hidden = decoder_hidden.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
+            decoder_c = decoder_c.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
+            decoder_output, decoder_hidden, decoder_c, decoder_attention = self.decoder(
+                decoder_input, decoder_hidden, decoder_c, encoder_outputs)
+
+            loss += torch.mean(criterion(decoder_output, target_tensor[di]) * loss_mask[:, di])
+
+            decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
+
+            decoder_attentions[:, :, di] = decoder_attention
+            decoder_outputs[:, di, :] = decoder_output
+
+        loss.backward()
+
+        optimizer.step()
+
+        return decoder_outputs, decoder_attentions, loss.item() / target_length
+
+    def net_eval(self, input_tensor, target_tensor, loss_mask, criterion):
+
+        batch_size = input_tensor.shape[0]
+        input_length = input_tensor.shape[1]
+        target_length = target_tensor.shape[1]
+
+        input_tensor = input_tensor.long()
+        target_tensor = target_tensor.long()
+
+        embedded_tensor = self.embedding_layer(input_tensor)
+        embedded_tensor = embedded_tensor.permute(1, 0, 2)
+
+        # (L, B)
+        target_tensor = target_tensor.permute(1, 0)
+        encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
+
+        encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+        encoder_c = self.encoder.initHidden(batch_size, self.device)
+
+        for ei in range(input_length):
+            embedded_slice = embedded_tensor[ei].unsqueeze(0)
+            encoder_output, (encoder_hidden, encoder_c) = self.encoder(
+                embedded_slice, encoder_hidden, encoder_hidden)
+            encoder_outputs[ei] = encoder_output
+
+        decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
+
+
+        # (L, B, H) -> (B, L, H)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
+
+        # Override encoder_hidden
+        decoder_hidden = encoder_hidden
+        decoder_c = encoder_c
+
+        decoder_attentions = torch.zeros([batch_size, input_length, target_length])
+        decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
+
+        loss = 0
+
+        for di in range(target_length):
+            decoder_input = self.embedding_layer_2(decoder_input_token)
+            decoder_c = decoder_c.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
+
+            decoder_hidden = decoder_hidden.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
+            decoder_output, decoder_hidden, decoder_c, decoder_attention = self.decoder(
+                decoder_input, decoder_hidden, decoder_c, encoder_outputs)
+
+            loss += torch.mean(criterion(decoder_output, target_tensor[di]) * loss_mask[:, di])
+
+            decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
+
+            decoder_attentions[:, :, di] = decoder_attention
+            decoder_outputs[:, di, :] = decoder_output
+
+        return decoder_outputs, decoder_attentions, loss.item() / target_length
+
+    def net_infer(self, input_tensor):
+
+        batch_size = input_tensor.shape[0]
+        input_length = input_tensor.shape[1]
+
+        input_tensor = input_tensor.long()
+
+        embedded_tensor = self.embedding_layer(input_tensor)
+        embedded_tensor = embedded_tensor.permute(1, 0, 2)
+
+        # (L, B)
+        encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
+
+        encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+
+        for ei in range(input_length):
+            embedded_slice = embedded_tensor[ei].unsqueeze(0)
+            encoder_output, (encoder_hidden, encoder_c) = self.encoder(
+                embedded_slice, encoder_hidden, encoder_c)
+            encoder_outputs[ei] = encoder_output
+
+        decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
+
+        encoder_hidden = encoder_outputs[-1, :, :].unsqueeze(0)
+
+        # (L, B, H) -> (B, L, H)
+        encoder_outputs = encoder_outputs.permute(1, 0, 2)
+
+        # Override encoder_hidden
+        decoder_hidden = encoder_hidden
+        decoder_c = encoder_c
+
+        MAX_LEN = 50
+
+        decoder_outputs = torch.zeros([batch_size, MAX_LEN, len(self.char2index)])
+
+        for di in range(MAX_LEN):
+            decoder_input = self.embedding_layer_2(decoder_input_token)
+
+            decoder_output, decoder_hidden, decoder_c, _ = self.decoder(
+                decoder_input, decoder_hidden, decoder_c, encoder_outputs)
+
+            decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
+
+            decoder_outputs[:, di, :] = decoder_output
+
+            if decoder_input_token[0, 0] == self.char2index['</s>']:
+                decoder_outputs = decoder_outputs[:, :di, :]
+                return decoder_outputs
+
+        return decoder_outputs
+
+
+class EncoderRNN_GRU(nn.Module):
+    def __init__(self, hidden_size):
+        super(EncoderRNN_GRU, self).__init__()
+        self.hidden_size = hidden_size
+        self.gru = nn.GRU(hidden_size, int(hidden_size / 2), bidirectional=True)
+
+    def forward(self, input, hidden):
+        output, hidden = self.gru(input, hidden)
+        return output, hidden
+
+    def initHidden(self, batch_size, device):
+        return torch.zeros(2, batch_size, int(self.hidden_size / 2), device=device)
+
+
+class AttnDecoderRNN_GRU(nn.Module):
+    def __init__(self, hidden_size, output_size, dropout_p=0.1):
+        super(AttnDecoderRNN_GRU, self).__init__()
+        self.hidden_size = hidden_size
+        self.output_size = output_size
+        self.dropout_p = dropout_p
+
+        self.attn = nn.Linear(self.hidden_size * 2, self.hidden_size)
+        self.attn_combine = nn.Linear(self.hidden_size * 2, self.hidden_size)
+        self.dropout = nn.Dropout(self.dropout_p)
+        self.gru = nn.GRU(self.hidden_size, self.hidden_size)
+        self.out = nn.Linear(self.hidden_size, self.output_size)
+
+    def forward(self, embedded, hidden, encoder_outputs):
+        embedded = self.dropout(embedded)
+
+        # (1, B, H) + (1, B, H) = (1, B, 2H)
+        concated_tensor = torch.cat((embedded, hidden), 2)
+
+        key = self.attn(concated_tensor)  # (1, B, H)
+        key = key.permute(1, 2, 0)  # (B, H, 1)
+
+        attention_value = torch.bmm(encoder_outputs, key)  # (B, L, 1)
+        attn_weights = F.softmax(attention_value, dim=1)
+
+        attn_weights = attn_weights.permute(0, 2, 1)  # (B, 1, L)
+        attn_applied = torch.bmm(attn_weights, encoder_outputs)  # (B, 1, H)
+        attn_applied = attn_applied.permute(1, 0, 2)  # (1, B, H)
+
+        output = torch.cat((embedded, attn_applied), 2)  # (1, B, 2H)
+        output = self.attn_combine(output)  # (1, B, H)
+        output = F.relu(output)
+        output, hidden = self.gru(output, hidden)  # (1, B, H)
+        output = F.log_softmax(self.out(output), dim=2)  # (1, B, 74)
+
+        return output.squeeze(0), hidden, attn_weights.squeeze(1)
+
+    def initHidden(self, device):
+        return torch.zeros(1, 1, self.hidden_size, device=device)
+
+
 class Seq2SeqNet_v2(nn.Module):
     def __init__(self, hidden_size, jamo_tokens, char2index, device):
         super(Seq2SeqNet_v2, self).__init__()
@@ -1743,8 +2080,8 @@ class Seq2SeqNet_v2(nn.Module):
 
         self.embedding_layer = nn.Embedding(len(jamo_tokens), hidden_size).to(device)
         self.embedding_layer_2 = nn.Embedding(len(char2index), hidden_size).to(device)
-        self.encoder = EncoderRNN(hidden_size).to(device)
-        self.decoder = AttnDecoderRNN(hidden_size, len(char2index), dropout_p=0.1).to(device)
+        self.encoder = EncoderRNN_GRU(hidden_size).to(device)
+        self.decoder = AttnDecoderRNN_GRU(hidden_size, len(char2index), dropout_p=0.1).to(device)
 
         for param in self.encoder.parameters():
             param.data.uniform_(-0.1, 0.1)

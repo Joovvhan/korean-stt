@@ -33,7 +33,7 @@ from datetime import datetime
 import scipy as sp
 import numpy as np
 
-from utils import *
+from utilsLSTM import *
 
 import nsml
 from nsml import GPU_NUM, DATASET_PATH, DATASET_NAME, HAS_DATASET
@@ -159,7 +159,7 @@ def main():
     device = torch.device('cuda' if args.cuda else 'cpu')
 
 	#net = Mel2SeqNet_General_Residual
-    net = Mel2SeqNet_General(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), args.num_layers, device)
+    net = Mel2SeqNet_LSTM(num_mels, args.num_hidden_enc, args.num_hidden_dec, len(unicode_jamo_list), args.num_layers, device)
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr_1)
     ctc_loss = nn.CTCLoss().to(device)
 
@@ -196,7 +196,17 @@ def main():
     logger.info('script_paths len: {}'.format(len(script_paths)))
     logger.info('korean_script_paths len: {}'.format(len(korean_script_paths)))
 
-    korean_script_list, jamo_script_list = get_korean_and_jamo_list_v2(korean_script_paths)
+    ####
+    ####
+    ####
+    ####
+    # korean_script_list, jamo_script_list = get_korean_and_jamo_list_v2(korean_script_paths)
+    korean_script_list, jamo_script_list = get_korean_and_jamo_list_v3(korean_script_paths)
+    ####
+    ####
+    ####
+    ####
+    ####
 
     logger.info('Korean script 0: {}'.format(korean_script_list[0]))
     logger.info('Korean script 0 length: {}'.format(len(korean_script_list[0])))
