@@ -153,6 +153,30 @@ class CTC_Decoder(nn.Module):
 
         return prediction_tensor
 
+class CTC_Decoder_LSTM(nn.Module):
+    def __init__(self, H, C, D_out, num_chars):
+        super(CTC_Decoder, self).__init__()
+        self.fc_embed = nn.Linear(H, H)
+        self.relu_embed = torch.nn.ReLU()
+        self.dropout_embed = nn.Dropout(p=0.5)
+        self.LSTM = nn.LSTM(H, (D_out, C), batch_first=True)
+        self.fc = nn.Linear(D_out, num_chars)
+        self.log_softmax = nn.LogSoftmax(dim=2)
+
+    def forward(self, input_tensor):
+        # (B, T, 2 * H/2)
+        output_tensor = self.fc_embed(input_tensor)
+        output_tensor = self.relu_embed(output_tensor)
+        output_tensor = self.dropout_embed(output_tensor)
+        # (B, T, H)
+        output_tensor, _ = self.LSTM(input_tensor)
+        # (B, T, H)
+        output_tensor = self.fc(output_tensor)
+        # (B, T, 75)
+        prediction_tensor = self.log_softmax(output_tensor)
+
+        return prediction_tensor
+
 
 class Mel2SeqNet(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, device):
@@ -385,6 +409,28 @@ class Encoder_General(nn.Module):
         return output_tensor
 
 
+class Encoder_LSTM(nn.Module):
+    def __init__(self, D_in, H, num_layers):
+        super(Encoder_LSTM, self).__init__()
+        self.fc = torch.nn.Linear(D_in, H)
+        self.relu = torch.nn.ReLU()
+        self.dropout = nn.Dropout(p=0.2)
+
+        self.lstm_layers = nn.ModuleList([nn.LSTM(H, int(H / 2), bidirectional=True, batch_first=True) for i in range(num_layers)])
+
+    def forward(self, input_tensor):
+        # (B, T, F)
+        output_tensor = self.fc(input_tensor)
+        output_tensor = self.relu(output_tensor)
+        output_tensor = self.dropout(output_tensor)
+        # (B, T, H)
+        for layer in self.lstm_layers:
+            output_tensor, (h, c) = layer(output_tensor)
+
+        return output_tensor
+
+
+
 class CTC_Decoder_General(nn.Module):
     def __init__(self, H, D_out, num_chars, num_layers):
         super(CTC_Decoder_General, self).__init__()
@@ -404,6 +450,33 @@ class CTC_Decoder_General(nn.Module):
         output_tensor = self.dropout_embed(output_tensor)
         # (B, T, H)
         for layer in self.gru_layers:
+            output_tensor, _ = layer(output_tensor)
+        # (B, T, H)
+        output_tensor = self.fc(output_tensor)
+        # (B, T, 75)
+        prediction_tensor = self.log_softmax(output_tensor)
+
+        return prediction_tensor
+
+class CTC_Decoder_LSTM(nn.Module):
+    def __init__(self, H, D_out, num_chars, num_layers):
+        super(CTC_Decoder_LSTM, self).__init__()
+        self.fc_embed = nn.Linear(H, H)
+        self.relu_embed = torch.nn.ReLU()
+        self.dropout_embed = nn.Dropout(p=0.2)
+
+        self.lstm_layers = nn.ModuleList([nn.LSTM(H, D_out, batch_first=True)] + [nn.LSTM(D_out, D_out, batch_first=True) for i in range(num_layers - 1)])
+
+        self.fc = nn.Linear(D_out, num_chars)
+        self.log_softmax = nn.LogSoftmax(dim=2)
+
+    def forward(self, input_tensor):
+        # (B, T, 2 * H/2)
+        output_tensor = self.fc_embed(input_tensor)
+        output_tensor = self.relu_embed(output_tensor)
+        output_tensor = self.dropout_embed(output_tensor)
+        # (B, T, H)
+        for layer in self.lstm_layers:
             output_tensor, _ = layer(output_tensor)
         # (B, T, H)
         output_tensor = self.fc(output_tensor)
@@ -476,12 +549,11 @@ class CTC_Decoder_General_Residual(nn.Module):
 
         return prediction_tensor
 
-class Mel2SeqNet_General(nn.Module):
+class Mel2SeqNet_LSTM(nn.Module):
     def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
-        super(Mel2SeqNet_General, self).__init__()
-
-        self.encoder = Encoder_General(D_in, H, num_layers).to(device)
-        self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
+        super(Mel2SeqNet_LSTM, self).__init__()
+        self.encoder = Encoder_LSTM(D_in, H, num_layers).to(device)
+        self.decoder = CTC_Decoder_LSTM(H, D_out, num_chars, num_layers).to(device)
 
         # Initialize weights with random uniform numbers with range
         for param in self.encoder.parameters():
