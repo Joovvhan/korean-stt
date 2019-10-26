@@ -384,6 +384,26 @@ class Encoder_General(nn.Module):
 
         return output_tensor
 
+class Encoder_LSTM(nn.Module):
+    def __init__(self, D_in, H, num_layers):
+        super(Encoder_General, self).__init__()
+        self.fc = torch.nn.Linear(D_in, H)
+        self.relu = torch.nn.ReLU()
+        self.dropout = nn.Dropout(p=0.2)
+
+        self.gru_layers = nn.ModuleList([nn.LSTM(H, int(H / 2), bidirectional=True, batch_first=True) for i in range(num_layers)])
+
+    def forward(self, input_tensor):
+        # (B, T, F)
+        output_tensor = self.fc(input_tensor)
+        output_tensor = self.relu(output_tensor)
+        output_tensor = self.dropout(output_tensor)
+        # (B, T, H)
+        for layer in self.gru_layers:
+            output_tensor, _ = layer(output_tensor)
+
+        return output_tensor
+
 
 class CTC_Decoder_General(nn.Module):
     def __init__(self, H, D_out, num_chars, num_layers):
@@ -482,6 +502,29 @@ class Mel2SeqNet_General(nn.Module):
         super(Mel2SeqNet_General, self).__init__()
 
         self.encoder = Encoder_General(D_in, H, num_layers).to(device)
+        self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
+
+        # Initialize weights with random uniform numbers with range
+        for param in self.encoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+        for param in self.decoder.parameters():
+            param.data.uniform_(-0.1, 0.1)
+
+    def forward(self, input_tensor):
+        batch_size = input_tensor.shape[0]
+        # (B, T, F) -> (B, T, H)
+        encoded_tensor = self.encoder(input_tensor)
+        # (B, T, H) -> (B, T, 75)
+        pred_tensor = self.decoder(encoded_tensor)
+        pred_tensor = pred_tensor.permute(1, 0, 2)
+
+        return pred_tensor
+
+class Mel2SeqNet_LSTM(nn.Module):
+    def __init__(self, D_in, H, D_out, num_chars, num_layers, device):
+        super(Mel2SeqNet_General, self).__init__()
+
+        self.encoder = Encoder_LSTM(D_in, H, num_layers).to(device)
         self.decoder = CTC_Decoder_General(H, D_out, num_chars, num_layers).to(device)
 
         # Initialize weights with random uniform numbers with range
