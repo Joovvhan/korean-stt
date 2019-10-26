@@ -1513,11 +1513,11 @@ class EncoderRNN(nn.Module):
     def __init__(self, hidden_size):
         super(EncoderRNN, self).__init__()
         self.hidden_size = hidden_size
-        self.gru = nn.GRU(hidden_size, int(hidden_size / 2), bidirectional=True)
+        self.lstm = nn.LSTM(hidden_size, int(hidden_size / 2), bidirectional=True)
 
-    def forward(self, input, hidden):
-        output, hidden = self.gru(input, hidden)
-        return output, hidden
+    def forward(self, input, hidden, c):
+        output, (hidden, c) = self.lstm(input, (hidden, c))
+        return output, (hidden, c)
 
     def initHidden(self, batch_size, device):
         return torch.zeros(2, batch_size, int(self.hidden_size / 2), device=device)
@@ -1533,15 +1533,15 @@ class AttnDecoderRNN(nn.Module):
         self.attn = nn.Linear(self.hidden_size * 2, self.hidden_size)
         self.attn_combine = nn.Linear(self.hidden_size * 2, self.hidden_size)
         self.dropout = nn.Dropout(self.dropout_p)
-        self.gru = nn.GRU(self.hidden_size, self.hidden_size)
+        self.lstm = nn.LSTM(self.hidden_size, self.hidden_size)
         self.out = nn.Linear(self.hidden_size, self.output_size)
 
-    def forward(self, embedded, hidden, encoder_outputs):
+    def forward(self, embedded, hidden, c, encoder_outputs):
         embedded = self.dropout(embedded)
 
         # (1, B, H) + (1, B, H) = (1, B, 2H)
         concated_tensor = torch.cat((embedded, hidden), 2)
-
+	
         key = self.attn(concated_tensor)  # (1, B, H)
         key = key.permute(1, 2, 0)  # (B, H, 1)
 
@@ -1555,10 +1555,10 @@ class AttnDecoderRNN(nn.Module):
         output = torch.cat((embedded, attn_applied), 2)  # (1, B, 2H)
         output = self.attn_combine(output)  # (1, B, H)
         output = F.relu(output)
-        output, hidden = self.gru(output, hidden)  # (1, B, H)
+        output, (hidden, c) = self.lstm(output, (hidden, c))  # (1, B, H)
         output = F.log_softmax(self.out(output), dim=2)  # (1, B, 74)
 
-        return output.squeeze(0), hidden, attn_weights.squeeze(1)
+        return output.squeeze(0), hidden, c, attn_weights.squeeze(1)
 
     def initHidden(self, device):
         return torch.zeros(1, 1, self.hidden_size, device=device)
@@ -1622,8 +1622,9 @@ class Seq2SeqNet(nn.Module):
         encoder_outputs = encoder_outputs.permute(1, 0, 2)
 
         # Override encoder_hidden
-        decoder_hidden = encoder_hidden
-
+        decoder_hidden = encoder_hidden.reshape(encoder_hidden.size())
+        logger.info("decoder hidden")
+        logger.info(decoder_hidden.size())
         decoder_attentions = torch.zeros([batch_size, input_length, target_length])
         decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
 
@@ -1761,9 +1762,9 @@ class Seq2SeqNet(nn.Module):
         return decoder_outputs
 
 
-class Seq2SeqNet_v2(nn.Module):
+class Seq2SeqNet_LSTM(nn.Module):
     def __init__(self, hidden_size, jamo_tokens, char2index, device):
-        super(Seq2SeqNet_v2, self).__init__()
+        super(Seq2SeqNet_LSTM, self).__init__()
 
         self.hidden_size = hidden_size
         self.device = device
@@ -1803,23 +1804,23 @@ class Seq2SeqNet_v2(nn.Module):
         encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
 
         encoder_hidden = self.encoder.initHidden(batch_size, self.device)
-
+        encoder_c = self.encoder.initHidden(batch_size, self.device)
         for ei in range(input_length):
             embedded_slice = embedded_tensor[ei].unsqueeze(0)
-            encoder_output, encoder_hidden = self.encoder(
-                embedded_slice, encoder_hidden)
+            encoder_output, (encoder_hidden, encoder_c) = self.encoder(
+                embedded_slice, encoder_hidden, encoder_c)
             encoder_outputs[ei] = encoder_output
 
         decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
 
-        # Override encoder hidden state
-        encoder_hidden = encoder_outputs[-1, :, :].unsqueeze(0)
 
         # (L, B, H) -> (B, L, H)
         encoder_outputs = encoder_outputs.permute(1, 0, 2)
 
         # Override encoder_hidden
         decoder_hidden = encoder_hidden
+        decoder_c = encoder_c
+
 
         decoder_attentions = torch.zeros([batch_size, input_length, target_length])
         decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
@@ -1828,9 +1829,10 @@ class Seq2SeqNet_v2(nn.Module):
 
         for di in range(target_length):
             decoder_input = self.embedding_layer_2(decoder_input_token)
-
-            decoder_output, decoder_hidden, decoder_attention = self.decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_hidden = decoder_hidden.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
+            decoder_c = decoder_c.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
+            decoder_output, decoder_hidden, decoder_c, decoder_attention = self.decoder(
+                decoder_input, decoder_hidden, decoder_c, encoder_outputs)
 
             loss += torch.mean(criterion(decoder_output, target_tensor[di]) * loss_mask[:, di])
 
@@ -1862,23 +1864,23 @@ class Seq2SeqNet_v2(nn.Module):
         encoder_outputs = torch.zeros(input_length, batch_size, self.hidden_size, device=self.device)
 
         encoder_hidden = self.encoder.initHidden(batch_size, self.device)
+        encoder_c = self.encoder.initHidden(batch_size, self.device)
 
         for ei in range(input_length):
             embedded_slice = embedded_tensor[ei].unsqueeze(0)
-            encoder_output, encoder_hidden = self.encoder(
-                embedded_slice, encoder_hidden)
+            encoder_output, (encoder_hidden, encoder_c) = self.encoder(
+                embedded_slice, encoder_hidden, encoder_hidden)
             encoder_outputs[ei] = encoder_output
 
         decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
 
-        # Override encoder hidden state
-        encoder_hidden = encoder_outputs[-1, :, :].unsqueeze(0)
 
         # (L, B, H) -> (B, L, H)
         encoder_outputs = encoder_outputs.permute(1, 0, 2)
 
         # Override encoder_hidden
         decoder_hidden = encoder_hidden
+        decoder_c = encoder_c
 
         decoder_attentions = torch.zeros([batch_size, input_length, target_length])
         decoder_outputs = torch.zeros([batch_size, target_length, len(self.char2index)])
@@ -1887,9 +1889,11 @@ class Seq2SeqNet_v2(nn.Module):
 
         for di in range(target_length):
             decoder_input = self.embedding_layer_2(decoder_input_token)
+            decoder_c = decoder_c.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
 
-            decoder_output, decoder_hidden, decoder_attention = self.decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_hidden = decoder_hidden.view(decoder_input.size()[0], decoder_input.size()[1], decoder_input.size()[2])
+            decoder_output, decoder_hidden, decoder_c, decoder_attention = self.decoder(
+                decoder_input, decoder_hidden, decoder_c, encoder_outputs)
 
             loss += torch.mean(criterion(decoder_output, target_tensor[di]) * loss_mask[:, di])
 
@@ -1917,8 +1921,8 @@ class Seq2SeqNet_v2(nn.Module):
 
         for ei in range(input_length):
             embedded_slice = embedded_tensor[ei].unsqueeze(0)
-            encoder_output, encoder_hidden = self.encoder(
-                embedded_slice, encoder_hidden)
+            encoder_output, (encoder_hidden, encoder_c) = self.encoder(
+                embedded_slice, encoder_hidden, encoder_c)
             encoder_outputs[ei] = encoder_output
 
         decoder_input_token = torch.tensor(([self.char2index['<s>']] * batch_size)).long().unsqueeze(0).to(self.device)
@@ -1930,6 +1934,7 @@ class Seq2SeqNet_v2(nn.Module):
 
         # Override encoder_hidden
         decoder_hidden = encoder_hidden
+        decoder_c = encoder_c
 
         MAX_LEN = 50
 
@@ -1938,8 +1943,8 @@ class Seq2SeqNet_v2(nn.Module):
         for di in range(MAX_LEN):
             decoder_input = self.embedding_layer_2(decoder_input_token)
 
-            decoder_output, decoder_hidden, _ = self.decoder(
-                decoder_input, decoder_hidden, encoder_outputs)
+            decoder_output, decoder_hidden, decoder_c, _ = self.decoder(
+                decoder_input, decoder_hidden, decoder_c, encoder_outputs)
 
             decoder_input_token = torch.argmax(decoder_output, dim=1).unsqueeze(0)
 

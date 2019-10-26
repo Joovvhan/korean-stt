@@ -163,7 +163,7 @@ def main():
     net_optimizer = optim.Adam(net.parameters(), lr=args.lr_1)
     ctc_loss = nn.CTCLoss().to(device)
 
-    net_B = Seq2SeqNet_v2(args.num_hidden_seq, jamo_tokens, char2index, device)
+    net_B = Seq2SeqNet_LSTM(args.num_hidden_seq, jamo_tokens, char2index, device)
     net_B_optimizer = optim.Adam(net_B.parameters(), lr=args.lr_2)
     net_B_criterion = nn.NLLLoss(reduction='none').to(device)
 
