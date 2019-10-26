@@ -33,12 +33,98 @@ target_dict = dict()
 
 # Baseline Function
 
+def label_to_string(labels):
+    if len(labels.shape) == 1:
+        sent = str()
+        for i in labels:
+            if i.item() == EOS_token:
+                break
+            sent += index2char[i.item()]
+        return sent
+
+    elif len(labels.shape) == 2:
+        sents = list()
+        for i in labels:
+            sent = str()
+            for j in i:
+                if j.item() == EOS_token:
+                    break
+                sent += index2char[j.item()]
+            sents.append(sent)
+
+        return sents
+
+
+def char_distance(ref, hyp):
+    ref = ref.replace(' ', '')
+    hyp = hyp.replace(' ', '')
+
+    dist = Lev.distance(hyp, ref)
+    length = len(ref.replace(' ', ''))
+
+    return dist, length
+
+
+def get_distance(ref_labels, hyp_labels, display=False):
+    total_dist = 0
+    total_length = 0
+    for i in range(len(ref_labels)):
+        ref = label_to_string(ref_labels[i])
+        hyp = label_to_string(hyp_labels[i])
+        dist, length = char_distance(ref, hyp)
+        total_dist += dist
+        total_length += length
+        if display:
+            cer = total_dist / total_length
+            logger.debug('%d (%0.4f)\n(%s)\n(%s)' % (i, cer, ref, hyp))
+    return total_dist, total_length
+
+
 def load_targets(path):
     with open(path, 'r') as f:
         for no, line in enumerate(f):
             key, target = line.strip().split(',')  # wav_001,192 755 662 192 678 476 662 408 690 2 125 610 662 220 640 125 662 179 192 661 123 662
             target_dict[key] = target
 
+
+# Baseline Function
+def get_script(filepath, bos_id, eos_id):
+    key = filepath.split('/')[-1].split('.')[0]
+    script = target_dict[key]
+    tokens = script.split(' ')
+    result = list()
+    result.append(bos_id)
+    for i in range(len(tokens)):
+        if len(tokens[i]) > 0:
+            result.append(int(tokens[i]))
+    result.append(eos_id)
+    return result
+
+
+# Baseline Function
+def get_spectrogram_feature(filepath):
+    (rate, width, sig) = wavio.readwav(filepath)
+    sig = sig.ravel()
+
+    stft = torch.stft(torch.FloatTensor(sig),
+                        N_FFT,
+                        hop_length=int(0.01*SAMPLE_RATE),
+                        win_length=int(0.030*SAMPLE_RATE),
+                        window=torch.hamming_window(int(0.030*SAMPLE_RATE)),
+                        center=False,
+                        normalized=False,
+                        onesided=True)
+
+    stft = (stft[:, :, 0].pow(2) + stft[:, :, 1].pow(2)).pow(0.5)
+    amag = stft.numpy()
+    feat = torch.FloatTensor(amag)
+
+    feat = torch.FloatTensor(feat).transpose(0, 1)
+
+    return feat
+
+
+# Baseline Function
 def load_label(label_path):
     char2index = dict() # [ch] = id
     index2char = dict() # [id] = ch
