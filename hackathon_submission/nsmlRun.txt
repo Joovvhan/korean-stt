@@ -1,0 +1,2 @@
+nsml run -a "--batch_size 32 --num_hidden_enc 1024 --num_hidden_dec 512 --lr_1 1e-5 --lr_2 1e-5 --train_ratio 0.9 --num_layers 4" -d sr-hack-2019-50000 -e mainLSTM.py
+
